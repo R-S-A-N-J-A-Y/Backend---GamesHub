@@ -4,6 +4,9 @@ const app = express();
 const connectDB = require("./config/dbconfig");
 connectDB();
 
+app.use(express.json());
+app.use("/admin", require("./routes/adminRoutes"));
+
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
