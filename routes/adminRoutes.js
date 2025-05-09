@@ -95,9 +95,9 @@ const gameGenres = [
 routes.post("/genre", async (req, res) => {
   const result = await Genrecontroller.addGenre(req.body);
   if (!result.success) {
-    res.status(result.code).send(result.message);
+    res.status(result.code).send({ data: req.body, message: result.message });
   } else {
-    res.send(result.data);
+    res.send({ data: result.data, message: "Data Saved Successfully." });
   }
 });
 
