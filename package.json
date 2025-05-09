@@ -1,0 +1,15 @@
+{
+  "name": "games-server",
+  "version": "1.0.0",
+  "description": "This is the Server for the Project GamesHub.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sanjay R",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
