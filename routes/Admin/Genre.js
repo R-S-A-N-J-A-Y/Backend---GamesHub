@@ -1,6 +1,6 @@
 const express = require("express");
 const routes = express.Router();
-const Genrecontroller = require("../../controllers/Admin/Genre");
+const Genrecontroller = require("../../controllers/Genre");
 
 //GET - to get all the Genre with Pagination
 routes.get("/:id", async (req, res) => {

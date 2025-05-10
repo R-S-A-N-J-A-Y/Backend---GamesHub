@@ -1,4 +1,4 @@
-const { GenreModel, Validate } = require("../../models/GenreModel");
+const { GenreModel, Validate } = require("../models/GenreModel");
 const _ = require("lodash");
 
 // get all the Genre name and id

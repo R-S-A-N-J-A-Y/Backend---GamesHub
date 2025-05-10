@@ -1,6 +1,6 @@
 const express = require("express");
 const routes = express.Router();
-const PlatformController = require("../../controllers/User/Platform");
+const PlatformController = require("../../controllers/Platform");
 
 routes.get("/:id", async (req, res) => {
   const result = await PlatformController.getAll(req.params.id);

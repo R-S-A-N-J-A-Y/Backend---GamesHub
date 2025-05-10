@@ -1,37 +1,35 @@
-const { TagModel, Validate } = require("../../models/TagModel");
+const { StoreModel, Validate } = require("../models/StoreModel");
 const _ = require("lodash");
 
-// get all the tags name and id
+// get all the stores name and url
 exports.getAll = async (id) => {
   const offset = id * 20;
   const limit = 20;
   try {
-    let data = await TagModel.find().skip(offset).limit(limit);
-    data = data.map((tag) => _.pick(tag, ["_id", "name"]));
+    let data = await StoreModel.find().skip(offset).limit(limit);
+    data = data.map((obj) => _.pick(obj, ["name", "url"]));
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: `${err.code} ${err.errmsg}` };
   }
 };
 
-// Add new tag details to Db
-exports.addTag = async (data) => {
+// Add new Store details to Db
+exports.addStore = async (data) => {
   const { error } = Validate(data);
-  if (error) {
+  if (error)
     return {
       success: false,
       code: 400,
       message: error.details.map((d) => d.message).join(", "),
     };
-  }
-
   try {
-    const TagData = new TagModel(data);
-    await TagData.save();
-    return { success: true, data: TagData };
+    const NewStore = new StoreModel(data);
+    await NewStore.save();
+    return { success: true, data: NewStore };
   } catch (err) {
     let message = "";
-    if (err.code === 11000) message = "Specified Tag Name is Already exist.";
+    if (err.code === 11000) message = "Specified Store Name is Already exist.";
     else message = `${err.code} ${err.errmsg}`;
     return { success: false, code: 409, message: message };
   }

@@ -1,6 +1,6 @@
 const express = require("express");
 const routes = express.Router();
-const Studiocontroller = require("../../controllers/Admin/Studio");
+const Studiocontroller = require("../../controllers/Studio");
 
 //GET - to get all the Studios
 routes.get("/:id", async (req, res) => {

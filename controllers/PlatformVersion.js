@@ -1,7 +1,7 @@
 const {
   PlatformVersionModel,
   Validate,
-} = require("../../models/PlatformVersionModel");
+} = require("../models/PlatformVersionModel");
 const Platform = require("./Platform");
 
 // get all the platforms

@@ -1,4 +1,4 @@
-const { PlatformModel, Validate } = require("../../models/PlatformModel");
+const { PlatformModel, Validate } = require("../models/PlatformModel");
 
 // READ OPERATION
 
