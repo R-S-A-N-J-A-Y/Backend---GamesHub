@@ -1,38 +1,24 @@
-const { PlatformModel, Validate } = require("../../models/PlatformModel");
-
-// READ OPERATION
+const {
+  PlatformVersionModel,
+  Validate,
+} = require("../../models/PlatformVersionModel");
+const Platform = require("./Platform");
 
 // get all the platforms
 exports.getAll = async (id) => {
   const offset = id * 20;
   const limit = 20;
   try {
-    let data = await PlatformModel.find().skip(offset).limit(limit);
+    let data = await PlatformVersionModel.find().skip(offset).limit(limit);
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
   }
 };
 
-exports.getId = async (platformName) => {
-  try {
-    const data = await PlatformModel.find({ name: platformName });
-    if (data.length === 0)
-      return {
-        success: false,
-        code: 409,
-        message: "Specified platform is not in database.",
-      };
-    return { success: true, id: data[0]._id };
-  } catch (err) {
-    return { success: false, code: 400, message: err };
-  }
-};
-
-// WRITE OOPERATION
-
 // Add new Platform details to Db
 exports.addPlatform = async (data) => {
+  // Validating the User data
   const { error } = Validate(data);
   if (error)
     return {
@@ -41,13 +27,18 @@ exports.addPlatform = async (data) => {
       message: error.details.map((d) => d.message).join(", "),
     };
 
+  //getting the id Of platform
+  const result = await Platform.getId(data.parentPlatform);
+  if (!result.success) return result;
+
+  const NewData = { ...data, parentPlatform: result.id };
   try {
-    const NewPlatform = new PlatformModel(data);
+    const NewPlatform = new PlatformVersionModel(NewData);
     await NewPlatform.save();
     return { success: true, data: NewPlatform };
   } catch (err) {
     let message = "";
-    if (err.code === 11000) message = "Specified Platform is Already exist.";
+    if (err.code === 11000) message = "Specified Version is Already exist.";
     else message = `${err.code} ${err.errmsg}`;
     return { success: false, code: 409, message: message };
   }
