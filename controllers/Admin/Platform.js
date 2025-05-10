@@ -1,5 +1,6 @@
 const { PlatformModel, Validate } = require("../../models/PlatformModel");
 
+// get all the platforms
 exports.getAll = async (id) => {
   const offset = id * 20;
   const limit = 20;
@@ -11,6 +12,7 @@ exports.getAll = async (id) => {
   }
 };
 
+// Add new Platform details to Db
 exports.addPlatform = async (data) => {
   const { error } = Validate(data);
   if (error)
