@@ -9,7 +9,6 @@ routes.use("/platformsv", require("./User/PlatformVersion"));
 routes.use("/studio", require("./User/Studio"));
 
 // User Query
-
 const userController = require("../controllers/User");
 
 routes.get("/", async (req, res) => {
@@ -21,12 +20,13 @@ routes.get("/", async (req, res) => {
 });
 
 routes.post("/", async (req, res) => {
-  const result = await userController.createUser(req.body);
+  const countryCode = req.query.countryCode;
+  const result = await userController.createUser(req.body, countryCode);
   if (!result.success)
     return res
       .status(result.code | 500)
-      .send({ data: req.body, message: result.message });
-  return res.send({ data: result.data, message: "User Saved Sucessfully" });
+      .send({ message: result.message, data: req.body });
+  return res.send(result);
 });
 
 module.exports = routes;

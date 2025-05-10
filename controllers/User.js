@@ -1,4 +1,7 @@
 const { UserModel, Validate } = require("../models/UserModel");
+const bcrypt = require("bcrypt");
+
+const saldRounds = 15;
 
 exports.getAll = async () => {
   try {
@@ -11,27 +14,36 @@ exports.getAll = async () => {
 
 exports.getUser = async (email, password) => {
   try {
-    const result = await UserModel.find({ email: email, password: password });
+    const result = await UserModel.find({ email });
     if (result.length === 0)
       return { success: false, message: "User not exist." };
+    const isMatch = await bcrypt.compare(password, result[0].password);
+    if (!isMatch)
+      return { success: false, message: "Email or Password is Incorrect." };
     return { success: true, data: result };
   } catch (err) {
+    console.log(err);
     return { success: false, message: err };
   }
 };
 
-exports.createUser = async (data) => {
-  const { error } = Validate(data, "IN");
+exports.createUser = async (data, countryCode) => {
+  const { error } = Validate(data, countryCode);
   if (error)
     return {
       success: false,
       code: 409,
       message: error.details.map((err) => err.message).join(", "),
     };
+  const hashedPassword = await bcrypt.hash(data.password, saldRounds);
   try {
-    const newUser = new UserModel(data);
+    const newUser = new UserModel({ ...data, password: hashedPassword });
     await newUser.save();
-    return { success: true, data: newUser };
+    return {
+      success: true,
+      data: newUser,
+      message: "User Created Successfully.",
+    };
   } catch (err) {
     if (err.code === 11000) {
       if (err.keyPattern?.email)
@@ -48,6 +60,9 @@ exports.createUser = async (data) => {
         };
     }
 
-    return { success: false, message: err };
+    return {
+      success: false,
+      message: "Server down. Try Again after some time.",
+    };
   }
 };
