@@ -1,6 +1,6 @@
 const express = require("express");
 const routes = express.Router();
-const StoreController = require("../../controllers/Admin/Store");
+const StoreController = require("../../controllers/User/Store");
 
 //GET - to get all the stores with pagination
 routes.get("/:id", async (req, res) => {
