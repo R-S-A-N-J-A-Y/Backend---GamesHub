@@ -1,5 +1,19 @@
 const { GenreModel, Validate } = require("../../models/GenreModel");
+const _ = require("lodash");
 
+// get all the Genre name and id
+exports.getAll = async () => {
+  try {
+    let data = await GenreModel.find();
+    data = data.map((genre) => _.pick(genre, ["_id", "name"]));
+    return { success: true, data: data };
+  } catch (err) {
+    console.log(err);
+    return { success: false, message: `${err.code} ${err.errmsg}` };
+  }
+};
+
+// Add new Genre details to Db
 exports.addGenre = async (data) => {
   const { error } = Validate(data);
   if (error)

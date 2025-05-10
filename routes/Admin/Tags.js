@@ -2,6 +2,14 @@ const express = require("express");
 const routes = express.Router();
 const Tagcontroller = require("../../controllers/Admin/Tags");
 
+//GET - to get all the Tags
+routes.get("/", async (req, res) => {
+  const result = await Tagcontroller.getAll();
+  if (!result.success) return res.status(500).send({ message: result.message });
+  return res.send({ data: result.data });
+});
+
+// POST - Create an New Tag
 routes.post("/", async (req, res) => {
   const result = await Tagcontroller.addTag(req.body);
   if (!result.success) {

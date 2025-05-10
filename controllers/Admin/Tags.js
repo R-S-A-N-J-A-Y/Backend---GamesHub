@@ -1,5 +1,18 @@
 const { TagModel, Validate } = require("../../models/TagModel");
+const _ = require("lodash");
 
+// get all the tags name and id
+exports.getAll = async () => {
+  try {
+    let data = await TagModel.find();
+    data = data.map((tag) => _.pick(tag, ["_id", "name"]));
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: `${err.code} ${err.errmsg}` };
+  }
+};
+
+// Add new tag details to Db
 exports.addTag = async (data) => {
   const { error } = Validate(data);
   if (error) {
