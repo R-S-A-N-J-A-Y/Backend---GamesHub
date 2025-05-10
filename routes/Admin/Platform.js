@@ -8,4 +8,12 @@ routes.get("/:id", async (req, res) => {
   return res.send({ data: result.data });
 });
 
+routes.post("/", async (req, res) => {
+  const result = await PlatformController.addPlatform(req.body);
+  if (!result.success)
+    return res.status(result.code).send({ message: result.message });
+  else
+    return res.send({ data: result.data, message: "Data Saved Successfully." });
+});
+
 module.exports = routes;
