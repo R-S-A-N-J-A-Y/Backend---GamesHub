@@ -15,8 +15,8 @@ routes.get("/", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const result = await userController.getUser(email, password);
-  if (!result.success) return res.send(result);
-  res.send({ data: result.data });
+  if (!result.success) return res.status(404).send(result);
+  res.send(result);
 });
 
 routes.post("/", async (req, res) => {
