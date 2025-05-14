@@ -27,7 +27,6 @@ const GameSchema = mongoose.Schema(
     collections: {
       type: [mongoose.Types.ObjectId],
       ref: "Collections",
-      required: true,
     },
 
     peopleAdded: { type: Number, required: true, default: 0 },
@@ -64,24 +63,22 @@ const Validate = (data) => {
       "any.required": `"screenshots" is required`,
     }),
     video: Joi.string().uri(),
-    studios: Joi.array().items(Joi.string()).required().message({
+    studios: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"studios" is required`,
     }),
-    platforms: Joi.array().items(Joi.string()).required().message({
+    platforms: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"platforms" is required`,
     }),
-    genres: Joi.array().items(Joi.string()).required().message({
+    genres: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"genres" is required`,
     }),
-    stores: Joi.array().items(Joi.string()).required().message({
+    stores: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"stores" is required`,
     }),
-    tags: Joi.array().items(Joi.string()).required().message({
+    tags: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"tags" is required`,
     }),
-    collections: Joi.array().items(Joi.string()).required().message({
-      "any.required": `"collections" is required`,
-    }),
+    collections: Joi.array().items(Joi.string()),
   });
 
   return schema.validate(data);

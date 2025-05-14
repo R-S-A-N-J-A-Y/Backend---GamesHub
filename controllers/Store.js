@@ -2,20 +2,46 @@ const { StoreModel, Validate } = require("../models/StoreModel");
 const _ = require("lodash");
 
 // get all the stores name and url
-exports.getAll = async (id) => {
+const getAll = async (id) => {
   const offset = id * 20;
   const limit = 20;
   try {
     let data = await StoreModel.find().skip(offset).limit(limit);
-    data = data.map((obj) => _.pick(obj, ["name", "url"]));
+    data = data.map((obj) => _.pick(obj, ["_id", "name", "url"]));
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: `${err.code} ${err.errmsg}` };
   }
 };
 
+//Get Store id by name, Input: name
+const getId = async (name) => {
+  try {
+    const data = await StoreModel.find({ name });
+    if (data.length === 0)
+      return { success: false, message: `${name} is not available` };
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+//Get object Ids of Store - Input : [Name]
+const getIds = async (arr) => {
+  try {
+    const results = await Promise.all(arr.map((name) => getId(name)));
+    for (let result of results) {
+      if (!result.success) return result;
+    }
+    const ids = results.map((result) => result.data[0]._id);
+    return { success: true, data: ids };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // Add new Store details to Db
-exports.addStore = async (data) => {
+const addStore = async (data) => {
   const { error } = Validate(data);
   if (error)
     return {
@@ -34,3 +60,18 @@ exports.addStore = async (data) => {
     return { success: false, code: 409, message: message };
   }
 };
+
+//Add Game Id to existing Stores
+const addGameId = async (StoreIds, GameId) => {
+  try {
+    await StoreModel.updateMany(
+      { _id: { $in: StoreIds } },
+      { $addToSet: { gamesId: GameId } }
+    );
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+module.exports = { getAll, getIds, getId, addStore, addGameId };

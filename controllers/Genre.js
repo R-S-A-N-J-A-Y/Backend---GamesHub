@@ -2,7 +2,7 @@ const { GenreModel, Validate } = require("../models/GenreModel");
 const _ = require("lodash");
 
 // get all the Genre name and id
-exports.getAll = async (id) => {
+const getAll = async (id) => {
   const limit = 20;
   const offset = id * 20;
   try {
@@ -15,8 +15,34 @@ exports.getAll = async (id) => {
   }
 };
 
+//Get genre id by name, Input: name
+const getId = async (name) => {
+  try {
+    const data = await GenreModel.find({ name });
+    if (data.length === 0)
+      return { success: false, message: `${name} is not available` };
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+//Get object Ids of Genre - Input : [Name]
+const getIds = async (arr) => {
+  try {
+    const results = await Promise.all(arr.map((name) => getId(name)));
+    for (let result of results) {
+      if (!result.success) return result;
+    }
+    const ids = results.map((result) => result.data[0]._id);
+    return { success: true, data: ids };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // Add new Genre details to Db
-exports.addGenre = async (data) => {
+const addGenre = async (data) => {
   const { error } = Validate(data);
   if (error)
     return {
@@ -39,3 +65,17 @@ exports.addGenre = async (data) => {
     }
   }
 };
+
+const addGameId = async (GenreIds, GameId) => {
+  try {
+    await GenreModel.updateMany(
+      { _id: { $in: GenreIds } },
+      { $addToSet: { gamesID: GameId } }
+    );
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+module.exports = { getAll, getId, getIds, addGenre, addGameId };

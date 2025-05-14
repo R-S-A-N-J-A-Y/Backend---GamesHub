@@ -2,8 +2,8 @@ const { StudioModel, Validate } = require("../models/StudiosModel");
 const _ = require("lodash");
 
 // get all the Studios name and id
-exports.getAll = async (id) => {
-  const offset = id * 20;
+const getAll = async (pageNumber) => {
+  const offset = pageNumber * 20;
   const limit = 20;
   try {
     let data = await StudioModel.find().skip(offset).limit(limit);
@@ -14,8 +14,36 @@ exports.getAll = async (id) => {
   }
 };
 
+//Get object Id of Studio - Input : Name
+const getId = async (name) => {
+  try {
+    let data = await StudioModel.find({ name });
+    if (data.length === 0)
+      return { success: false, message: `${name} is not available` };
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: `${err.code} ${err.errmsg}` };
+  }
+};
+
+//Get object Id of Studio - Input : [Name]
+const getIds = async (arr) => {
+  try {
+    const results = await Promise.all(arr.map((name) => getId(name)));
+    // Check for any failed responses
+    for (let res of results) {
+      if (!res.success) return res;
+    }
+
+    const ids = results.map((res) => res.data[0]._id);
+    return { success: true, data: ids };
+  } catch (err) {
+    return { success: false, message: `${err.code} ${err.errmsg}` };
+  }
+};
+
 // Add new Studio details to Db
-exports.addStudio = async (data) => {
+const addStudio = async (data) => {
   const { error } = Validate(data);
   if (error) {
     return {
@@ -36,3 +64,18 @@ exports.addStudio = async (data) => {
     return { success: false, code: 409, message: message };
   }
 };
+
+//Add Game Id to existing Studio
+const addGameId = async (StudioIds, gameId) => {
+  try {
+    await StudioModel.updateMany(
+      { _id: { $in: StudioIds } },
+      { $addToSet: { gamesId: gameId } }
+    );
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+module.exports = { getAll, getId, getIds, addStudio, addGameId };

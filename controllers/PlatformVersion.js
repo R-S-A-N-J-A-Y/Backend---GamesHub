@@ -5,7 +5,7 @@ const {
 const Platform = require("./Platform");
 
 // get all the platforms
-exports.getAll = async (id) => {
+const getAll = async (id) => {
   const offset = id * 20;
   const limit = 20;
   try {
@@ -16,8 +16,34 @@ exports.getAll = async (id) => {
   }
 };
 
+//Get PlatformVersion id by name, Input: name
+const getId = async (name) => {
+  try {
+    const data = await PlatformVersionModel.find({ name });
+    if (data.length === 0)
+      return { success: false, message: `${name} is not available` };
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+//Get object Ids of PlatformVersion - Input : [Name]
+const getIds = async (arr) => {
+  try {
+    const results = await Promise.all(arr.map((name) => getId(name)));
+    for (let result of results) {
+      if (!result.success) return result;
+    }
+    const ids = results.map((result) => result.data[0]._id);
+    return { success: true, data: ids };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // Add new Platform details to Db
-exports.addPlatform = async (data) => {
+const addPlatform = async (data) => {
   // Validating the User data
   const { error } = Validate(data);
   if (error)
@@ -43,3 +69,18 @@ exports.addPlatform = async (data) => {
     return { success: false, code: 409, message: message };
   }
 };
+
+//Add Game Id to existing PlatformVersions
+const addGameId = async (PlatformVersionIds, GameId) => {
+  try {
+    await PlatformVersionModel.updateMany(
+      { _id: { $in: PlatformVersionIds } },
+      { $addToSet: { GamesId: GameId } }
+    );
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+module.exports = { getAll, getId, getIds, addPlatform, addGameId };
