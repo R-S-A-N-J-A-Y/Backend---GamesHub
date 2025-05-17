@@ -14,13 +14,18 @@ exports.getAll = async () => {
 
 exports.getUser = async (email, password) => {
   try {
-    const result = await UserModel.find({ email });
-    if (result.length === 0)
-      return { success: false, message: "User not exist." };
-    const isMatch = await bcrypt.compare(password, result[0].password);
+    //Getting the User with Email
+    const result = await UserModel.findOne({ email });
+    if (!result) return { success: false, message: "User not exist." };
+
+    //Verify Password
+    const isMatch = await bcrypt.compare(password, result.password);
     if (!isMatch)
       return { success: false, message: "Email or Password is Incorrect." };
-    return { success: true, data: result };
+
+    //Genrating web token
+    const token = result.generateAuthToken();
+    return { success: true, data: result, token: token };
   } catch (err) {
     console.log(err);
     return { success: false, message: err };
@@ -28,6 +33,7 @@ exports.getUser = async (email, password) => {
 };
 
 exports.createUser = async (data, countryCode) => {
+  // Verifying the Data send by client
   const { error } = Validate(data, countryCode);
   if (error)
     return {
@@ -35,13 +41,20 @@ exports.createUser = async (data, countryCode) => {
       code: 409,
       message: error.details.map((err) => err.message).join(", "),
     };
+
+  // hashing the password
   const hashedPassword = await bcrypt.hash(data.password, saldRounds);
   try {
+    //Creating new User
     const newUser = new UserModel({ ...data, password: hashedPassword });
     await newUser.save();
+
+    // Genrating web token
+    const token = newUser.generateAuthToken();
     return {
       success: true,
       data: newUser,
+      token: token,
       message: "User Created Successfully.",
     };
   } catch (err) {

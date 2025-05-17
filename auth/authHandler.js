@@ -1,4 +1,3 @@
-// User Query
 const userController = require("../controllers/User");
 
 //Get all the Registered User

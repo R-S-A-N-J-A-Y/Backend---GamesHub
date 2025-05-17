@@ -1,3 +1,7 @@
+require("dotenv").config();
+const PrivateKey = process.env.PRIVATE_KEY;
+
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const JoiBase = require("joi");
 const JoiPhone = require("joi-phone-number");
@@ -23,6 +27,14 @@ const UserSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+UserSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign(
+    { _id: this._id, name: this.name, email: this.email, role: this.role },
+    PrivateKey
+  );
+  return token;
+};
 
 const UserModel = mongoose.model("User", UserSchema);
 
