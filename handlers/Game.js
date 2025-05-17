@@ -1,4 +1,5 @@
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const express = require("express");
 const routes = express.Router();
 
@@ -10,7 +11,7 @@ routes.get("/", async (req, res) => {
   return res.send(result);
 });
 
-routes.post("/", auth, async (req, res) => {
+routes.post("/", [auth, admin], async (req, res) => {
   const result = await GameController.createGame(req.body);
   if (!result.success) return res.status(result.code | 500).send(result);
   return res.send(result);

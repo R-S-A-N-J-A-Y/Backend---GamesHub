@@ -1,4 +1,5 @@
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const express = require("express");
 const routes = express.Router();
 const Tagcontroller = require("../controllers/Tags");
@@ -11,7 +12,7 @@ routes.get("/:id", async (req, res) => {
 });
 
 // POST - Create an New Tag
-routes.post("/", auth, async (req, res) => {
+routes.post("/", [auth, admin], async (req, res) => {
   const result = await Tagcontroller.addTag(req.body);
   if (!result.success) {
     res.status(result.code).send({ data: req.body, message: result.message });

@@ -1,4 +1,5 @@
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const express = require("express");
 const routes = express.Router();
 const PlatformController = require("../controllers/Platform");
@@ -11,7 +12,7 @@ routes.get("/:id", async (req, res) => {
 });
 
 // POST - Create an New Platform
-routes.post("/", auth, async (req, res) => {
+routes.post("/", [auth, admin], async (req, res) => {
   const result = await PlatformController.addPlatform(req.body);
   if (!result.success)
     return res.status(result.code).send({ message: result.message });
