@@ -4,6 +4,18 @@ const bcrypt = require("bcrypt");
 
 const saldRounds = 15;
 
+exports.getMe = async (id) => {
+  try {
+    const user = await UserModel.findOne({ _id: id });
+    return {
+      success: true,
+      data: _.pick(user, ["name", "email", "dob", "phone", "gender", "role"]),
+    };
+  } catch (err) {
+    return { success: false, message: "Invalid User Id" };
+  }
+};
+
 exports.getAll = async () => {
   try {
     const result = await UserModel.find();
