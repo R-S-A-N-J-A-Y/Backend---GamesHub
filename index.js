@@ -7,6 +7,7 @@ connectDB();
 app.use(express.json());
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/user", require("./routes/userRoutes"));
+app.use("/auth", require("./routes/authRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello World");
