@@ -1,3 +1,4 @@
+const auth = require("../middleware/auth");
 const express = require("express");
 const routes = express.Router();
 const StoreController = require("../controllers/Store");
@@ -10,7 +11,7 @@ routes.get("/:id", async (req, res) => {
 });
 
 // POST - Create an New Stores
-routes.post("/", async (req, res) => {
+routes.post("/", auth, async (req, res) => {
   const result = await StoreController.addStore(req.body);
   if (!result.success)
     return res

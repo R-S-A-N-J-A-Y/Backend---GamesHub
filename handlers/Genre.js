@@ -1,3 +1,4 @@
+const auth = require("../middleware/auth");
 const express = require("express");
 const routes = express.Router();
 const Genrecontroller = require("../controllers/Genre");
@@ -10,7 +11,7 @@ routes.get("/:id", async (req, res) => {
 });
 
 // POST - Create an New Genre
-routes.post("/", async (req, res) => {
+routes.post("/", auth, async (req, res) => {
   const result = await Genrecontroller.addGenre(req.body);
   if (!result.success) {
     res.status(result.code).send({ data: req.body, message: result.message });
