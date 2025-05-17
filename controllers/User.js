@@ -1,4 +1,5 @@
 const { UserModel, Validate } = require("../models/UserModel");
+const _ = require("lodash");
 const bcrypt = require("bcrypt");
 
 const saldRounds = 15;
@@ -25,7 +26,11 @@ exports.getUser = async (email, password) => {
 
     //Genrating web token
     const token = result.generateAuthToken();
-    return { success: true, data: result, token: token };
+    return {
+      success: true,
+      data: _.pick(result, ["_id", "name", "email"]),
+      token: token,
+    };
   } catch (err) {
     console.log(err);
     return { success: false, message: err };
@@ -53,7 +58,7 @@ exports.createUser = async (data, countryCode) => {
     const token = newUser.generateAuthToken();
     return {
       success: true,
-      data: newUser,
+      data: _.pick(newUser, ["_id", "name", "email"]),
       token: token,
       message: "User Created Successfully.",
     };
