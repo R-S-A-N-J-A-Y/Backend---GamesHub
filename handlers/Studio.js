@@ -1,17 +1,17 @@
 const express = require("express");
 const routes = express.Router();
-const Genrecontroller = require("../../controllers/Genre");
+const Studiocontroller = require("../controllers/Studio");
 
-//GET - to get all the Genre with Pagination
+//GET - to get all the Studios
 routes.get("/:id", async (req, res) => {
-  const result = await Genrecontroller.getAll(req.params.id);
+  const result = await Studiocontroller.getAll(req.params.id);
   if (!result.success) return res.status(500).send({ message: result.message });
   return res.send({ data: result.data });
 });
 
-// POST - Create an New Genre
+// POST - Create an New Studio
 routes.post("/", async (req, res) => {
-  const result = await Genrecontroller.addGenre(req.body);
+  const result = await Studiocontroller.addStudio(req.body);
   if (!result.success) {
     res.status(result.code).send({ data: req.body, message: result.message });
   } else {

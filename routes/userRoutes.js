@@ -1,13 +1,13 @@
 const express = require("express");
 const routes = express.Router();
 
-routes.use("/genre", require("./User/Genre"));
-routes.use("/tags", require("./User/Tags"));
-routes.use("/stores", require("./User/Stores"));
-routes.use("/platforms", require("./User/Platform"));
-routes.use("/platformsv", require("./User/PlatformVersion"));
-routes.use("/studio", require("./User/Studio"));
-routes.use("/game", require("./User/Game"));
+routes.use("/genre", require("../handlers/Genre"));
+routes.use("/tags", require("../handlers/Tags"));
+routes.use("/stores", require("../handlers/Stores"));
+routes.use("/platforms", require("../handlers/Platform"));
+routes.use("/platformsv", require("../handlers/PlatformVersion"));
+routes.use("/studio", require("../handlers/Studio"));
+routes.use("/game", require("../handlers/Game"));
 
 // User Query
 const userController = require("../controllers/User");

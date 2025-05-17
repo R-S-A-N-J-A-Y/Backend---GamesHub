@@ -1,6 +1,6 @@
 const express = require("express");
 const routes = express.Router();
-const Tagcontroller = require("../../controllers/Tags");
+const Tagcontroller = require("../controllers/Tags");
 
 //GET - to get all the Tags
 routes.get("/:id", async (req, res) => {

@@ -1,7 +1,7 @@
 const express = require("express");
 const routes = express.Router();
 
-const GameController = require("../../controllers/Game");
+const GameController = require("../controllers/Game");
 
 routes.get("/", async (req, res) => {
   const result = await GameController.getAll();
