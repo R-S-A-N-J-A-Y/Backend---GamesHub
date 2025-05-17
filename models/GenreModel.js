@@ -3,7 +3,7 @@ const Joi = require("joi");
 
 const GenreSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  gamesID: [{ type: mongoose.Types.ObjectId, ref: "Games" }],
+  gamesID: [{ type: mongoose.Types.ObjectId, ref: "Game" }],
 });
 
 const GenreModel = mongoose.model("Genre", GenreSchema);

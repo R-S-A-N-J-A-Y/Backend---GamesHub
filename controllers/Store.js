@@ -1,10 +1,21 @@
 const { StoreModel, Validate } = require("../models/StoreModel");
 const _ = require("lodash");
 
+// get genre by id
+const getById = async (id) => {
+  try {
+    let data = await StoreModel.findOne({ _id: id })
+      .select("-__v")
+      .populate("gamesId", "_id name coverImageUrl peopleAdded ratings likes");
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // get all the stores name and url
-const getAll = async (id) => {
-  const offset = id * 20;
-  const limit = 20;
+const getAll = async (pageNumber, limit) => {
+  const offset = pageNumber * limit;
   try {
     let data = await StoreModel.find().skip(offset).limit(limit);
     data = data.map((obj) => _.pick(obj, ["_id", "name", "url"]));
@@ -74,4 +85,4 @@ const addGameId = async (StoreIds, GameId) => {
   }
 };
 
-module.exports = { getAll, getIds, getId, addStore, addGameId };
+module.exports = { getById, getAll, getIds, getId, addStore, addGameId };

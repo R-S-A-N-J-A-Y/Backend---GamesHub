@@ -4,7 +4,7 @@ const Joi = require("joi");
 const StudioSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   imageUrl: { type: String, required: true },
-  gamesId: { type: [mongoose.Types.ObjectId], ref: "Games" },
+  gamesId: { type: [mongoose.Types.ObjectId], ref: "Game" },
 });
 
 const StudioModel = mongoose.model("Studio", StudioSchema);

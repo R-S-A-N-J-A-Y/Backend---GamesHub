@@ -9,12 +9,35 @@ const {
   addGameId: PlatformAddGameId,
 } = require("./PlatformVersion");
 
-exports.getAll = async () => {
+exports.getAll = async (page = 0, limit = 0) => {
+  const offset = limit * page;
   try {
-    const result = await GameModel.find();
+    const result = await GameModel.find()
+      .skip(offset)
+      .limit(limit)
+      .select("_id name coverImageUrl peopleAdded ratings likes");
     return { success: true, data: result };
   } catch (err) {
-    return { success: true, message: err };
+    return { success: true, message: "Server Error" };
+  }
+};
+
+exports.getById = async (id) => {
+  try {
+    const data = await GameModel.findOne({ _id: id }).select([
+      "-createdAt",
+      "-updatedAt",
+      "-__v",
+    ]);
+    if (!data)
+      return {
+        success: false,
+        code: 400,
+        message: "Game with Specified Id is not in database.",
+      };
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
   }
 };
 

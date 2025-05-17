@@ -3,7 +3,7 @@ const Joi = require("joi");
 
 const TagSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  gamesId: { type: [mongoose.Types.ObjectId], ref: "Games" },
+  gamesId: { type: [mongoose.Types.ObjectId], ref: "Game" },
 });
 
 const TagModel = mongoose.model("Tag", TagSchema);

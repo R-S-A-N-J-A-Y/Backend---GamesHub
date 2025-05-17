@@ -4,11 +4,11 @@ const Joi = require("joi");
 const PlatformVersionSchema = mongoose.Schema({
   parentPlatform: {
     type: mongoose.Types.ObjectId,
-    ref: "Platforms",
+    ref: "Platform",
     required: true,
   },
   name: { type: String, required: true, unique: true },
-  GamesId: { type: [mongoose.Types.ObjectId], ref: "Games", unique: true },
+  GamesId: { type: [mongoose.Types.ObjectId], ref: "Game", unique: true },
 });
 
 const PlatformVersionModel = mongoose.model(

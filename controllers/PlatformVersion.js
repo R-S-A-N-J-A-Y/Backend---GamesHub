@@ -4,10 +4,22 @@ const {
 } = require("../models/PlatformVersionModel");
 const Platform = require("./Platform");
 
+// get platformV by id
+const getById = async (id) => {
+  try {
+    let data = await PlatformVersionModel.findOne({ _id: id })
+      .select("-__v")
+      .populate("parentPlatform", "name")
+      .populate("GamesId", "_id name coverImageUrl peopleAdded ratings likes");
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // get all the platforms
-const getAll = async (id) => {
-  const offset = id * 20;
-  const limit = 20;
+const getAll = async (pageNumber = 0, limit = 0) => {
+  const offset = pageNumber * limit;
   try {
     let data = await PlatformVersionModel.find().skip(offset).limit(limit);
     return { success: true, data: data };
@@ -83,4 +95,4 @@ const addGameId = async (PlatformVersionIds, GameId) => {
   }
 };
 
-module.exports = { getAll, getId, getIds, addPlatform, addGameId };
+module.exports = { getById, getAll, getId, getIds, addPlatform, addGameId };

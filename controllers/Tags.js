@@ -1,10 +1,21 @@
 const { TagModel, Validate } = require("../models/TagModel");
 const _ = require("lodash");
 
+// get genre by id
+const getById = async (id) => {
+  try {
+    let data = await TagModel.findOne({ _id: id })
+      .select("-__v")
+      .populate("gamesId", "_id name coverImageUrl peopleAdded ratings likes");
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // get all the tags name and id
-const getAll = async (id) => {
-  const offset = id * 20;
-  const limit = 20;
+const getAll = async (pageNumber = 0, limit = 0) => {
+  const offset = pageNumber * limit;
   try {
     let data = await TagModel.find().skip(offset).limit(limit);
     data = data.map((tag) => _.pick(tag, ["_id", "name"]));
@@ -76,4 +87,4 @@ const addGameId = async (TagIds, GameId) => {
   }
 };
 
-module.exports = { getAll, getId, getIds, addTag, addGameId };
+module.exports = { getById, getAll, getId, getIds, addTag, addGameId };

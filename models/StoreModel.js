@@ -5,7 +5,7 @@ const StoreSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   url: String,
   region: String,
-  gamesId: { type: [mongoose.Types.ObjectId], ref: "Games" },
+  gamesId: { type: [mongoose.Types.ObjectId], ref: "Game" },
 });
 
 const StoreModel = mongoose.model("Store", StoreSchema);

@@ -1,10 +1,21 @@
 const { GenreModel, Validate } = require("../models/GenreModel");
 const _ = require("lodash");
 
+// get genre by id
+const getById = async (id) => {
+  try {
+    let data = await GenreModel.findOne({ _id: id })
+      .select("-__v")
+      .populate("gamesID", "_id name coverImageUrl peopleAdded ratings likes");
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
 // get all the Genre name and id
-const getAll = async (id) => {
-  const limit = 20;
-  const offset = id * 20;
+const getAll = async (pageNumber = 0, limit = 0) => {
+  const offset = pageNumber * 20;
   try {
     let data = await GenreModel.find().skip(offset).limit(limit);
     data = data.map((genre) => _.pick(genre, ["_id", "name"]));
@@ -78,4 +89,4 @@ const addGameId = async (GenreIds, GameId) => {
   }
 };
 
-module.exports = { getAll, getId, getIds, addGenre, addGameId };
+module.exports = { getById, getAll, getId, getIds, addGenre, addGameId };

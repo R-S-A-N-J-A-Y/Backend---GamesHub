@@ -3,11 +3,22 @@ const { PlatformModel, Validate } = require("../models/PlatformModel");
 // READ OPERATION
 
 // get all the platforms
-exports.getAll = async (id) => {
-  const offset = id * 20;
-  const limit = 20;
+exports.getById = async (id) => {
   try {
-    let data = await PlatformModel.find().skip(offset).limit(limit);
+    let data = await PlatformModel.findOne({ _id: id });
+    return { success: true, data: data };
+  } catch (err) {
+    return { success: false, message: err };
+  }
+};
+
+exports.getAll = async (pageNumber = 0, limit = 0) => {
+  const offset = pageNumber * limit;
+  try {
+    let data = await PlatformModel.find()
+      .skip(offset)
+      .limit(limit)
+      .select("-__v");
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
