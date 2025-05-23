@@ -10,7 +10,7 @@ const getById = async (id) => {
     let data = await PlatformVersionModel.findOne({ _id: id })
       .select("-__v")
       .populate("parentPlatform", "name")
-      .populate("GamesId", "_id name coverImageUrl peopleAdded ratings likes");
+      .populate("gamesId", "_id name coverImageUrl ratings");
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
@@ -22,6 +22,11 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   const offset = pageNumber * limit;
   try {
     let data = await PlatformVersionModel.find().skip(offset).limit(limit);
+    data = data.map((platformV) => ({
+      _id: platformV._id,
+      name: platformV.name,
+      totalGames: platformV.gamesId?.length || 0,
+    }));
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
@@ -87,7 +92,7 @@ const addGameId = async (PlatformVersionIds, GameId) => {
   try {
     await PlatformVersionModel.updateMany(
       { _id: { $in: PlatformVersionIds } },
-      { $addToSet: { GamesId: GameId } }
+      { $addToSet: { gamesId: GameId } }
     );
     return { success: true };
   } catch (err) {

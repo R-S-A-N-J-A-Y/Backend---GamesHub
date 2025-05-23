@@ -6,7 +6,7 @@ const getById = async (id) => {
   try {
     let data = await TagModel.findOne({ _id: id })
       .select("-__v")
-      .populate("gamesId", "_id name coverImageUrl peopleAdded ratings likes");
+      .populate("gamesId", "_id name coverImageUrl ratings");
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
@@ -18,7 +18,11 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   const offset = pageNumber * limit;
   try {
     let data = await TagModel.find().skip(offset).limit(limit);
-    data = data.map((tag) => _.pick(tag, ["_id", "name"]));
+    data = data.map((tag) => ({
+      _id: tag._id,
+      name: tag.name,
+      totalGames: tag.gamesId?.length || 0,
+    }));
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: `${err.code} ${err.errmsg}` };

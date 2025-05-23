@@ -6,7 +6,7 @@ const getById = async (id) => {
   try {
     let data = await GenreModel.findOne({ _id: id })
       .select("-__v")
-      .populate("gamesID", "_id name coverImageUrl peopleAdded ratings likes");
+      .populate("gamesId", "_id name coverImageUrl ratings");
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
@@ -18,7 +18,11 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   const offset = pageNumber * 20;
   try {
     let data = await GenreModel.find().skip(offset).limit(limit);
-    data = data.map((genre) => _.pick(genre, ["_id", "name"]));
+    data = data = data.map((genre) => ({
+      _id: genre._id,
+      name: genre.name,
+      totalGames: genre.gamesId?.length || 0,
+    }));
     return { success: true, data: data };
   } catch (err) {
     console.log(err);

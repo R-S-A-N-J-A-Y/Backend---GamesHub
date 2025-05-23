@@ -6,7 +6,7 @@ const getById = async (id) => {
   try {
     let data = await StoreModel.findOne({ _id: id })
       .select("-__v")
-      .populate("gamesId", "_id name coverImageUrl peopleAdded ratings likes");
+      .populate("gamesId", "_id name coverImageUrl ratings");
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };
@@ -18,7 +18,12 @@ const getAll = async (pageNumber, limit) => {
   const offset = pageNumber * limit;
   try {
     let data = await StoreModel.find().skip(offset).limit(limit);
-    data = data.map((obj) => _.pick(obj, ["_id", "name", "url"]));
+    data = data.map((store) => ({
+      _id: store._id,
+      name: store.name,
+      url: store.url,
+      totalGames: store.gamesId?.length || 0,
+    }));
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: `${err.code} ${err.errmsg}` };

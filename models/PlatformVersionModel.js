@@ -8,7 +8,7 @@ const PlatformVersionSchema = mongoose.Schema({
     required: true,
   },
   name: { type: String, required: true, unique: true },
-  GamesId: { type: [mongoose.Types.ObjectId], ref: "Game", unique: true },
+  gamesId: { type: [mongoose.Types.ObjectId], ref: "Game", unique: true },
 });
 
 const PlatformVersionModel = mongoose.model(
