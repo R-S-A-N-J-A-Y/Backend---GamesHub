@@ -5,7 +5,11 @@ const cors = require("cors");
 const connectDB = require("./config/dbconfig");
 connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    exposedHeaders: ["x-auth-token"], // <-- allow client to read this header
+  })
+);
 app.use(express.json());
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/user", require("./routes/userRoutes"));
