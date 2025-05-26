@@ -49,6 +49,20 @@ exports.getUser = async (email, password) => {
   }
 };
 
+exports.getUserActions = async (_id) => {
+  try {
+    const User = await UserModel.findById(_id);
+    console.log(User);
+    return {
+      success: true,
+      data: { liked: User.likedGames, watchList: User.watchList },
+    };
+  } catch (err) {
+    console.log(err);
+    return { success: false, message: "Unexpencted Error Occurred." };
+  }
+};
+
 exports.createUser = async (data, countryCode) => {
   // Verifying the Data send by client
   const { error } = Validate(data, countryCode);

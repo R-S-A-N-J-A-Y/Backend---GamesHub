@@ -21,8 +21,8 @@ const UserSchema = mongoose.Schema(
     gender: { type: String, required: true },
     role: { type: String, required: true, default: "user" },
 
-    likedGames: { type: [mongoose.Types.ObjectId], ref: "Games" },
-    watchList: { type: [mongoose.Types.ObjectId], ref: "Games" },
+    likedGames: { type: [mongoose.Types.ObjectId], ref: "Game" },
+    watchList: { type: [mongoose.Types.ObjectId], ref: "Game" },
     purchaseHistory: { type: [mongoose.Types.ObjectId], ref: "Purchase" },
   },
   { timestamps: true }
