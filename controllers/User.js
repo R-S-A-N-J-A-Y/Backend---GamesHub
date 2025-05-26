@@ -25,6 +25,28 @@ exports.getAll = async () => {
   }
 };
 
+exports.toggleLike = async (UserId, gameId, liked) => {
+  try {
+    const User = await UserModel.findOne({ _id: UserId });
+    if (!User) {
+      return { success: false, message: "User not found" };
+    }
+
+    if (!liked)
+      User.likedGames = User.likedGames.filter(
+        (id) => id.toString() !== gameId
+      );
+    else {
+      if (!User.likedGames.includes(gameId)) User.likedGames.push(gameId);
+    }
+
+    User.save();
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: "Invalid User Id" };
+  }
+};
+
 exports.getUser = async (email, password) => {
   try {
     //Getting the User with Email
@@ -110,3 +132,5 @@ exports.createUser = async (data, countryCode) => {
     };
   }
 };
+
+// exports.toggleLike
