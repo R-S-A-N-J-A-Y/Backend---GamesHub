@@ -47,6 +47,24 @@ exports.toggleLike = async (UserId, gameId, liked) => {
   }
 };
 
+exports.toggleWatchList = async (UserId, gameId, watched) => {
+  try {
+    const User = await UserModel.findById({ _id: UserId });
+    if (!User) return { success: false, message: "User not found" };
+
+    if (!watched)
+      User.watchList = User.watchList.filter((id) => id.toString() !== gameId);
+    else {
+      if (!User.watchList.includes(gameId)) User.watchList.push(gameId);
+    }
+
+    User.save();
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: "Invalid User Id" };
+  }
+};
+
 exports.getUser = async (email, password) => {
   try {
     //Getting the User with Email
@@ -74,7 +92,6 @@ exports.getUser = async (email, password) => {
 exports.getUserActions = async (_id) => {
   try {
     const User = await UserModel.findById(_id);
-    console.log(User);
     return {
       success: true,
       data: { liked: User.likedGames, watchList: User.watchList },
@@ -132,5 +149,3 @@ exports.createUser = async (data, countryCode) => {
     };
   }
 };
-
-// exports.toggleLike
