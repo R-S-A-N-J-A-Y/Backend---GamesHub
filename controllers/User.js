@@ -31,7 +31,6 @@ exports.toggleLike = async (UserId, gameId, liked) => {
     if (!User) {
       return { success: false, message: "User not found" };
     }
-
     if (!liked)
       User.likedGames = User.likedGames.filter(
         (id) => id.toString() !== gameId
@@ -80,7 +79,7 @@ exports.getUser = async (email, password) => {
     const token = result.generateAuthToken();
     return {
       success: true,
-      data: _.pick(result, ["_id", "name", "email"]),
+      data: _.pick(result, ["_id", "name", "email", "watchList"]),
       token: token,
     };
   } catch (err) {
@@ -99,6 +98,36 @@ exports.getUserActions = async (_id) => {
   } catch (err) {
     console.log(err);
     return { success: false, message: "Unexpencted Error Occurred." };
+  }
+};
+
+const GameController = require("./Game");
+
+exports.getTop3WatchlistGames = async (userId) => {
+  try {
+    const User = await UserModel.findOne({ _id: userId });
+    if (!User) return { success: false, message: "User not exists." };
+    const sliced = User.watchList.slice(0, 3);
+
+    const gameResults = await Promise.all(
+      sliced.map((gameId) => GameController.getById(gameId))
+    );
+    const games = gameResults
+      .filter((res) => res.success)
+      .map((res) =>
+        _.pick(res.data, [
+          "_id",
+          "name",
+          "shortName",
+          "coverImageUrl",
+          "platforms",
+        ])
+      );
+
+    return { success: true, data: games };
+  } catch (err) {
+    console.log(err);
+    return { success: false, message: err };
   }
 };
 

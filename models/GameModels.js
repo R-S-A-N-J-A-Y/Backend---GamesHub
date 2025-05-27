@@ -18,7 +18,7 @@ const GameSchema = mongoose.Schema(
     },
     platforms: {
       type: [mongoose.Types.ObjectId],
-      ref: "PlatformVersions",
+      ref: "PlatformVersion",
       required: true,
     },
     genres: { type: [mongoose.Types.ObjectId], ref: "Genres", required: true },

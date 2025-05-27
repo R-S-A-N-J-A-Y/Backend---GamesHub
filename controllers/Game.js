@@ -24,11 +24,12 @@ exports.getAll = async (page = 0, limit = 0) => {
 
 exports.getById = async (id) => {
   try {
-    const data = await GameModel.findOne({ _id: id }).select([
-      "-createdAt",
-      "-updatedAt",
-      "-__v",
-    ]);
+    const data = await GameModel.findOne({ _id: id })
+      .select(["-createdAt", "-updatedAt", "-__v"])
+      .populate({
+        path: "platforms",
+        select: "name _id",
+      });
     if (!data)
       return {
         success: false,

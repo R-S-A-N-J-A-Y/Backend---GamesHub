@@ -11,6 +11,15 @@ routes.get("/profile", auth, async (req, res) => {
   return res.send(result.data);
 });
 
+routes.get("/watchListPreview", auth, async (req, res) => {
+  const UserId = req.user._id;
+  const result = await UserController.getTop3WatchlistGames(UserId);
+  // console.log(result);
+  if (result.success) return res.send(result);
+  return res.status(401).send(result);
+});
+
+// Toggling the Like action
 routes.patch("/toggleLike", auth, async (req, res) => {
   const id = req.user._id;
   const result = await UserController.toggleLike(
@@ -22,6 +31,7 @@ routes.patch("/toggleLike", auth, async (req, res) => {
   res.send(result);
 });
 
+// Toggling the watchList action
 routes.patch("/toggleWatchList", auth, async (req, res) => {
   const id = req.user._id;
   const result = await UserController.toggleWatchList(
