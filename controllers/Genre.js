@@ -19,9 +19,8 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   try {
     let data = await GenreModel.find().skip(offset).limit(limit);
     data = data = data.map((genre) => ({
-      _id: genre._id,
-      name: genre.name,
-      totalGames: genre.gamesId?.length || 0,
+      ...genre._doc,
+      totalGames: genre.gamesId.length || 0,
     }));
     return { success: true, data: data };
   } catch (err) {
