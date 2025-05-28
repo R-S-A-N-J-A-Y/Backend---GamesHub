@@ -19,8 +19,7 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   try {
     let data = await TagModel.find().skip(offset).limit(limit);
     data = data.map((tag) => ({
-      _id: tag._id,
-      name: tag.name,
+      ...tag._doc,
       totalGames: tag.gamesId?.length || 0,
     }));
     return { success: true, data: data };
@@ -91,4 +90,15 @@ const addGameId = async (TagIds, GameId) => {
   }
 };
 
-module.exports = { getById, getAll, getId, getIds, addTag, addGameId };
+const addTags = async (tagsArray) => {
+  try {
+    const insertedTags = await TagModel.insertMany(tagsArray, {
+      ordered: false,
+    });
+    return { success: true, data: insertedTags };
+  } catch (error) {
+    return { success: false, message: error.message, code: 400 };
+  }
+};
+
+module.exports = { getById, getAll, getId, getIds, addTag, addGameId, addTags };

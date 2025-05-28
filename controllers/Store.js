@@ -19,9 +19,7 @@ const getAll = async (pageNumber, limit) => {
   try {
     let data = await StoreModel.find().skip(offset).limit(limit);
     data = data.map((store) => ({
-      _id: store._id,
-      name: store.name,
-      url: store.url,
+      ...store._doc,
       totalGames: store.gamesId?.length || 0,
     }));
     return { success: true, data: data };

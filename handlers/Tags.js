@@ -34,4 +34,28 @@ routes.post("/", [auth, admin], async (req, res) => {
   }
 });
 
+routes.post("/bulk", async (req, res) => {
+  const tags = req.body;
+
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return res
+      .status(400)
+      .send({ message: "Request body should be a non-empty array." });
+  }
+
+  try {
+    const result = await Tagcontroller.addTags(tags);
+    if (!result.success) {
+      res.status(result.code).send({ data: tags, message: result.message });
+    } else {
+      res.send({ data: result.data, message: "Bulk tags saved successfully." });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: "Server error during bulk insert.",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = routes;
