@@ -19,8 +19,7 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   try {
     let data = await StudioModel.find().skip(offset).limit(limit);
     data = data.map((Studio) => ({
-      _id: Studio._id,
-      name: Studio.name,
+      ...Studio._doc,
       totalGames: Studio.gamesId?.length || 0,
     }));
     return { success: true, data: data };
