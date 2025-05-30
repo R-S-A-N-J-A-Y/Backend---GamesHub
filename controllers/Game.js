@@ -29,6 +29,10 @@ exports.getById = async (id) => {
       .populate({
         path: "platforms",
         select: "name _id",
+      })
+      .populate({
+        path: "tags",
+        select: "_id name",
       });
     if (!data)
       return {
@@ -38,6 +42,7 @@ exports.getById = async (id) => {
       };
     return { success: true, data: data };
   } catch (err) {
+    console.log(err);
     return { success: false, message: err };
   }
 };

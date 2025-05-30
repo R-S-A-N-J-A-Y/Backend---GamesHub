@@ -22,7 +22,7 @@ const GameSchema = mongoose.Schema(
       required: true,
     },
     genres: { type: [mongoose.Types.ObjectId], ref: "Genres", required: true },
-    tags: { type: [mongoose.Types.ObjectId], ref: "Tags", required: true },
+    tags: { type: [mongoose.Types.ObjectId], ref: "Tag", required: true },
     stores: { type: [mongoose.Types.ObjectId], ref: "Stores", required: true },
     collections: {
       type: [mongoose.Types.ObjectId],
