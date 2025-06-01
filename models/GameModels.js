@@ -10,6 +10,12 @@ const GameSchema = mongoose.Schema(
     coverImageUrl: { type: String, required: true },
     screenshots: { type: [String], required: true },
     video: String,
+    youtubeLink: { type: [String], required: true },
+
+    features: {
+      type: [{ name: String, imageUrl: String, description: String }],
+      required: true,
+    },
 
     studios: {
       type: [mongoose.Types.ObjectId],
@@ -63,6 +69,16 @@ const Validate = (data) => {
       "any.required": `"screenshots" is required`,
     }),
     video: Joi.string().uri(),
+
+    youtubeLink: Joi.string().required().messages({
+      "string.empty": `"youtube Link" cannot be empty`,
+      "any.required": `"youtube Link" is required`,
+    }),
+
+    features: Joi.array().items(Joi.string()).required().message({
+      "any.required": `"features" is required`,
+    }),
+
     studios: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"studios" is required`,
     }),
