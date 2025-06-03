@@ -23,8 +23,7 @@ const getAll = async (pageNumber = 0, limit = 0) => {
   try {
     let data = await PlatformVersionModel.find().skip(offset).limit(limit);
     data = data.map((platformV) => ({
-      _id: platformV._id,
-      name: platformV.name,
+      ...platformV._doc,
       totalGames: platformV.gamesId?.length || 0,
     }));
     return { success: true, data: data };
