@@ -112,17 +112,19 @@ exports.getTop3WatchlistGames = async (userId) => {
     const gameResults = await Promise.all(
       sliced.map((gameId) => GameController.getById(gameId))
     );
+
     const games = gameResults
       .filter((res) => res.success)
-      .map((res) =>
-        _.pick(res.data, [
+      .map((res, idx) => ({
+        ..._.pick(res.data, [
           "_id",
           "name",
           "shortName",
           "coverImageUrl",
           "platforms",
-        ])
-      );
+        ]),
+        addedAt: sliced[idx].addedAt,
+      }));
 
     return { success: true, data: games };
   } catch (err) {

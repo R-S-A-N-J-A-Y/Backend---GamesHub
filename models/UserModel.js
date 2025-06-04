@@ -22,7 +22,21 @@ const UserSchema = mongoose.Schema(
     role: { type: String, required: true, default: "user" },
 
     likedGames: { type: [mongoose.Types.ObjectId], ref: "Game" },
-    watchList: { type: [mongoose.Types.ObjectId], ref: "Game" },
+    watchList: [
+      {
+        game: { type: mongoose.Types.ObjectId, ref: "Game" },
+        addedAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    recentlyWatched: { type: [mongoose.Types.ObjectId], ref: "Game" },
+    cart: [
+      {
+        game: { type: mongoose.Types.ObjectId, ref: "Game" },
+        addedAt: { type: Date, default: Date.now },
+      },
+    ],
+
     purchaseHistory: { type: [mongoose.Types.ObjectId], ref: "Purchase" },
   },
   { timestamps: true }
