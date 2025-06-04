@@ -42,4 +42,15 @@ routes.patch("/toggleWatchList", auth, async (req, res) => {
   if (!result.success) return res.status(500).send(result);
   res.send(result);
 });
+
+routes.patch("/toggleCart", auth, async (req, res) => {
+  const id = req.user._id;
+  const result = await UserController.toggleCart(
+    id,
+    req.body.gameId,
+    req.body.isAdded
+  );
+  if (!result.success) return res.status(500).send(result);
+  return res.send(result);
+});
 module.exports = routes;

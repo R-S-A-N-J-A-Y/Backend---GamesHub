@@ -64,6 +64,24 @@ exports.toggleWatchList = async (UserId, gameId, watched) => {
   }
 };
 
+exports.toggleCart = async (UserId, gameId, isAdded) => {
+  try {
+    const User = await UserModel.findById({ _id: UserId });
+    if (!User) return { success: false, message: "User not found" };
+
+    if (!isAdded)
+      User.cart = User.cart.filter((id) => id.toString() !== gameId);
+    else {
+      if (!User.cart.includes(gameId)) User.cart.push(gameId);
+    }
+
+    User.save();
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: "Invalid User Id" };
+  }
+};
+
 exports.getUser = async (email, password) => {
   try {
     //Getting the User with Email
