@@ -120,6 +120,7 @@ exports.getUserActions = async (_id) => {
 };
 
 const GameController = require("./Game");
+const { populate } = require("dotenv");
 
 exports.getTop3WatchlistGames = async (userId) => {
   try {
@@ -153,7 +154,13 @@ exports.getTop3WatchlistGames = async (userId) => {
 
 exports.getCart = async (userId) => {
   try {
-    const result = await UserModel.findOne({ _id: userId }).select("cart");
+    const result = await UserModel.findOne({ _id: userId })
+      .select("cart -_id")
+      .populate({
+        path: "cart.game",
+        select: "name coverImageUrl platforms",
+        populate: { path: "platforms", select: "name" },
+      });
     if (!result) {
       return { success: false, message: "User not found." };
     }
