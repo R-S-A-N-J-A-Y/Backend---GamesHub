@@ -120,7 +120,6 @@ exports.getUserActions = async (_id) => {
 };
 
 const GameController = require("./Game");
-const { populate } = require("dotenv");
 
 exports.getTop3WatchlistGames = async (userId) => {
   try {
@@ -158,7 +157,7 @@ exports.getCart = async (userId) => {
       .select("cart -_id")
       .populate({
         path: "cart.game",
-        select: "name coverImageUrl platforms",
+        select: "name coverImageUrl platforms price",
         populate: { path: "platforms", select: "name" },
       });
     if (!result) {

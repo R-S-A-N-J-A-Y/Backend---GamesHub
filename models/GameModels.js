@@ -39,6 +39,7 @@ const GameSchema = mongoose.Schema(
     ratings: { type: Number, required: true, default: 0 },
     totalPurchase: { type: Number, required: true, default: 0 },
     likes: { type: Number, required: true, default: 0 },
+    price: { type: Number, required: true, default: 0 },
   },
   { timestamps: true }
 );
