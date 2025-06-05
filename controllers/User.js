@@ -151,6 +151,19 @@ exports.getTop3WatchlistGames = async (userId) => {
   }
 };
 
+exports.getCart = async (userId) => {
+  try {
+    const result = await UserModel.findOne({ _id: userId }).select("cart");
+    if (!result) {
+      return { success: false, message: "User not found." };
+    }
+    return { success: true, data: result.cart };
+  } catch (err) {
+    console.warn(err);
+    return { success: false, message: "Error Fetching in the Database." };
+  }
+};
+
 exports.createUser = async (data, countryCode) => {
   // Verifying the Data send by client
   const { error } = Validate(data, countryCode);

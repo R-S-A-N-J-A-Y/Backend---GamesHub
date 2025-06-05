@@ -19,6 +19,13 @@ routes.get("/watchListPreview", auth, async (req, res) => {
   return res.status(401).send(result);
 });
 
+routes.get("/cart", auth, async (req, res) => {
+  const UserId = req.user._id;
+  const result = await UserController.getCart(UserId);
+  if (result.success) return res.send(result);
+  return res.status(500).send(result);
+});
+
 // Toggling the Like action
 routes.patch("/toggleLike", auth, async (req, res) => {
   const id = req.user._id;
