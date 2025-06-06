@@ -59,4 +59,11 @@ routes.post("/cart", auth, async (req, res) => {
   return res.status(statusCode).send(result);
 });
 
+routes.delete("/cart/:id", auth, async (req, res) => {
+  const cartId = req.params.id;
+  const userId = req.user._id;
+  const result = await UserController.deleteCart(userId, cartId);
+  return res.status(result.statusCode).send(result.message);
+});
+
 module.exports = routes;

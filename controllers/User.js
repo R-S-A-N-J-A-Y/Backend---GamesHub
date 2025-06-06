@@ -165,7 +165,7 @@ exports.getTop3WatchlistGames = async (userId) => {
 exports.getCart = async (userId) => {
   try {
     const result = await UserModel.findOne({ _id: userId })
-      .select("cart -_id")
+      .select("cart _id")
       .populate({
         path: "cart.game",
         select: "name coverImageUrl platforms price",
@@ -226,5 +226,17 @@ exports.createUser = async (data, countryCode) => {
       success: false,
       message: "Server down. Try Again after some time.",
     };
+  }
+};
+
+exports.deleteCart = async (userId, cartId) => {
+  try {
+    await UserModel.updateOne(
+      { _id: userId },
+      { $pull: { cart: { _id: cartId } } }
+    );
+    return { statusCode: 200, message: "Deleted Successfully." };
+  } catch {
+    return { statusCode: 500, message: "Deleted not successfull." };
   }
 };
