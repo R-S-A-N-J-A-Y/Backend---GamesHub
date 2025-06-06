@@ -7,6 +7,12 @@ const JoiBase = require("joi");
 const JoiPhone = require("joi-phone-number");
 const Joi = JoiBase.extend(JoiPhone);
 
+const CartItemSchema = mongoose.Schema({
+  quantity: { type: Number, default: 1 },
+  game: { type: mongoose.Types.ObjectId, ref: "Game" },
+  addedAt: { type: Date, default: Date.now },
+});
+
 const UserSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -30,12 +36,7 @@ const UserSchema = mongoose.Schema(
     ],
 
     recentlyWatched: { type: [mongoose.Types.ObjectId], ref: "Game" },
-    cart: [
-      {
-        game: { type: mongoose.Types.ObjectId, ref: "Game" },
-        addedAt: { type: Date, default: Date.now },
-      },
-    ],
+    cart: [CartItemSchema],
 
     purchaseHistory: { type: [mongoose.Types.ObjectId], ref: "Purchase" },
   },

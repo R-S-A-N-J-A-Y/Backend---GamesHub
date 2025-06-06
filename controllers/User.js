@@ -64,21 +64,32 @@ exports.toggleWatchList = async (UserId, gameId, watched) => {
   }
 };
 
-exports.toggleCart = async (UserId, gameId, isAdded) => {
+exports.CreateCart = async (UserId, gameId) => {
   try {
-    const User = await UserModel.findById({ _id: UserId });
-    if (!User) return { success: false, message: "User not found" };
+    const UserCart = await UserModel.findOne(
+      {
+        _id: UserId,
+        "cart.game": gameId,
+      },
+      { "cart.$": 1 }
+    );
 
-    if (!isAdded)
-      User.cart = User.cart.filter((id) => id.toString() !== gameId);
-    else {
-      if (!User.cart.includes(gameId)) User.cart.push(gameId);
+    if (!UserCart) {
+      await UserModel.updateOne(
+        { _id: UserId },
+        { $push: { cart: { game: gameId } } }
+      );
+      return { success: true, statusCode: 201 };
     }
 
-    User.save();
-    return { success: true };
+    await UserModel.updateOne(
+      { _id: UserId, "cart._id": UserCart.cart[0]._id },
+      { $inc: { "cart.$.quantity": 1 } }
+    );
+
+    return { success: true, statusCode: 200 };
   } catch (err) {
-    return { success: false, message: "Invalid User Id" };
+    return { success: false, statusCode: 500, message: "Backend is dead..." };
   }
 };
 
