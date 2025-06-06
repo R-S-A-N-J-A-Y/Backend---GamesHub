@@ -54,7 +54,8 @@ routes.post("/cart", auth, async (req, res) => {
   const id = req.user._id;
   const { statusCode, ...result } = await UserController.CreateCart(
     id,
-    req.body.gameId
+    req.body.gameId,
+    req.body.isInc
   );
   return res.status(statusCode).send(result);
 });

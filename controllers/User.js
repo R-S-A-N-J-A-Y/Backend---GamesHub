@@ -64,7 +64,7 @@ exports.toggleWatchList = async (UserId, gameId, watched) => {
   }
 };
 
-exports.CreateCart = async (UserId, gameId) => {
+exports.CreateCart = async (UserId, gameId, isInc) => {
   try {
     const UserCart = await UserModel.findOne(
       {
@@ -84,11 +84,12 @@ exports.CreateCart = async (UserId, gameId) => {
 
     await UserModel.updateOne(
       { _id: UserId, "cart._id": UserCart.cart[0]._id },
-      { $inc: { "cart.$.quantity": 1 } }
+      { $inc: { "cart.$.quantity": isInc ? 1 : -1 } }
     );
 
     return { success: true, statusCode: 200 };
   } catch (err) {
+    console.log(err);
     return { success: false, statusCode: 500, message: "Backend is dead..." };
   }
 };
