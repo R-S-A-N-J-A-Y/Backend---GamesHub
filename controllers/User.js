@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 
 const saldRounds = 15;
 
+// Get - Normal fetch Controllers
+
 exports.getMe = async (id) => {
   try {
     const user = await UserModel.findOne({ _id: id });
@@ -22,86 +24,6 @@ exports.getAll = async () => {
     return { success: true, data: result };
   } catch (err) {
     return { success: false, message: err };
-  }
-};
-
-exports.toggleLike = async (UserId, gameId, liked) => {
-  try {
-    const User = await UserModel.findOne({ _id: UserId });
-    if (!User) {
-      return { success: false, message: "User not found" };
-    }
-    if (!liked)
-      User.likedGames = User.likedGames.filter(
-        (id) => id.toString() !== gameId
-      );
-    else {
-      if (!User.likedGames.includes(gameId)) User.likedGames.push(gameId);
-    }
-
-    User.save();
-    return { success: true };
-  } catch (err) {
-    return { success: false, message: "Invalid User Id" };
-  }
-};
-
-exports.toggleWatchList = async (UserId, gameId, watched) => {
-  try {
-    const User = await UserModel.findById({ _id: UserId });
-    if (!User) return { success: false, message: "User not found" };
-
-    if (!watched)
-      User.watchList = User.watchList.filter((id) => id.toString() !== gameId);
-    else {
-      if (!User.watchList.includes(gameId)) User.watchList.push(gameId);
-    }
-
-    User.save();
-    return { success: true };
-  } catch (err) {
-    return { success: false, message: "Invalid User Id" };
-  }
-};
-
-exports.CreateCart = async (UserId, gameId, isInc) => {
-  try {
-    const UserCart = await UserModel.findOne(
-      {
-        _id: UserId,
-        "cart.game": gameId,
-      },
-      { "cart.$": 1 }
-    );
-
-    if (!UserCart) {
-      await UserModel.updateOne(
-        { _id: UserId },
-        { $push: { cart: { game: gameId } } }
-      );
-      return { success: true, statusCode: 201 };
-    }
-
-    if (UserCart.cart[0].quantity === 1 && !isInc) {
-      return { statusCode: 400, message: "Quantity cannot be empty." };
-    }
-
-    if (UserCart.cart[0].quantity === 5 && isInc) {
-      return {
-        statusCode: 400,
-        message: "Quantity cannot be Increased above 5.",
-      };
-    }
-
-    await UserModel.updateOne(
-      { _id: UserId, "cart._id": UserCart.cart[0]._id },
-      { $inc: { "cart.$.quantity": isInc ? 1 : -1 } }
-    );
-
-    return { success: true, statusCode: 200 };
-  } catch (err) {
-    console.log(err);
-    return { success: false, statusCode: 500, message: "Backend is dead..." };
   }
 };
 
@@ -193,6 +115,90 @@ exports.getCart = async (userId) => {
   }
 };
 
+// Patch - Toggle Controllers
+
+exports.toggleLike = async (UserId, gameId, liked) => {
+  try {
+    const User = await UserModel.findOne({ _id: UserId });
+    if (!User) {
+      return { success: false, message: "User not found" };
+    }
+    if (!liked)
+      User.likedGames = User.likedGames.filter(
+        (id) => id.toString() !== gameId
+      );
+    else {
+      if (!User.likedGames.includes(gameId)) User.likedGames.push(gameId);
+    }
+
+    User.save();
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: "Invalid User Id" };
+  }
+};
+
+exports.toggleWatchList = async (UserId, gameId, watched) => {
+  try {
+    const User = await UserModel.findById({ _id: UserId });
+    if (!User) return { success: false, message: "User not found" };
+
+    if (!watched)
+      User.watchList = User.watchList.filter((id) => id.toString() !== gameId);
+    else {
+      if (!User.watchList.includes(gameId)) User.watchList.push(gameId);
+    }
+
+    User.save();
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: "Invalid User Id" };
+  }
+};
+
+// Post - Create an New Content
+
+exports.CreateCart = async (UserId, gameId, isInc) => {
+  try {
+    const UserCart = await UserModel.findOne(
+      {
+        _id: UserId,
+        "cart.game": gameId,
+      },
+      { "cart.$": 1 }
+    );
+
+    if (!UserCart) {
+      await UserModel.updateOne(
+        { _id: UserId },
+        { $push: { cart: { game: gameId } } }
+      );
+      return { success: true, statusCode: 201 };
+    }
+
+    if (UserCart.cart[0].quantity === 1 && !isInc) {
+      return { statusCode: 400, message: "Quantity cannot be empty." };
+    }
+
+    if (UserCart.cart[0].quantity === 5 && isInc) {
+      return {
+        statusCode: 400,
+        message: "Quantity cannot be Increased above 5.",
+      };
+    }
+
+    await UserModel.updateOne(
+      { _id: UserId, "cart._id": UserCart.cart[0]._id },
+      { $inc: { "cart.$.quantity": isInc ? 1 : -1 } }
+    );
+
+    return { success: true, statusCode: 200 };
+  } catch (err) {
+    console.log(err);
+    return { success: false, statusCode: 500, message: "Backend is dead..." };
+  }
+};
+
 exports.createUser = async (data, countryCode) => {
   // Verifying the Data send by client
   const { error } = Validate(data, countryCode);
@@ -240,6 +246,8 @@ exports.createUser = async (data, countryCode) => {
     };
   }
 };
+
+// Delete - Delete Controllers
 
 exports.deleteCart = async (userId, cartId) => {
   try {
