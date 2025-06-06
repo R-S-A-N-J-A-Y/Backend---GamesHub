@@ -82,6 +82,17 @@ exports.CreateCart = async (UserId, gameId, isInc) => {
       return { success: true, statusCode: 201 };
     }
 
+    if (UserCart.cart[0].quantity === 1 && !isInc) {
+      return { statusCode: 400, message: "Quantity cannot be empty." };
+    }
+
+    if (UserCart.cart[0].quantity === 5 && isInc) {
+      return {
+        statusCode: 400,
+        message: "Quantity cannot be Increased above 5.",
+      };
+    }
+
     await UserModel.updateOne(
       { _id: UserId, "cart._id": UserCart.cart[0]._id },
       { $inc: { "cart.$.quantity": isInc ? 1 : -1 } }
