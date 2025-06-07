@@ -39,10 +39,12 @@ routes.get("/", async (req, res) => {
   if (!result.success) return res.status(500).send(result);
 
   // Updating for Log in User
+  const watchListGameIds = watchList.map((item) => item.game.toString());
+  // console.log(watchList);
   const UpdatedResult = result.data.map((game) => ({
     ...game._doc,
     liked: likedGames.includes(game._id.toString()),
-    watched: watchList.includes(game._id.toString()),
+    watched: watchListGameIds.includes(game._id.toString()),
   }));
 
   return res.send({ ...result, data: UpdatedResult });

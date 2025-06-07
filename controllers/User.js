@@ -70,10 +70,11 @@ exports.getTop3WatchlistGames = async (userId) => {
   try {
     const User = await UserModel.findOne({ _id: userId });
     if (!User) return { success: false, message: "User not exists." };
+
     const sliced = User.watchList.slice(0, 3);
 
     const gameResults = await Promise.all(
-      sliced.map((gameId) => GameController.getById(gameId))
+      sliced.map((list) => GameController.getById(list.game))
     );
 
     const games = gameResults
@@ -144,12 +145,18 @@ exports.toggleWatchList = async (UserId, gameId, watched) => {
     if (!User) return { success: false, message: "User not found" };
 
     if (!watched)
-      User.watchList = User.watchList.filter((id) => id.toString() !== gameId);
+      User.watchList = User.watchList.filter(
+        (obj) => obj.game.toString() !== gameId
+      );
     else {
-      if (!User.watchList.includes(gameId)) User.watchList.push(gameId);
+      const alreadyInWatchList = User.watchList.some(
+        (item) => item.game.toString() === gameId.toString()
+      );
+      if (!alreadyInWatchList)
+        User.watchList.push({ game: gameId, addedAt: new Date() });
     }
 
-    User.save();
+    await User.save();
     return { success: true };
   } catch (err) {
     return { success: false, message: "Invalid User Id" };
