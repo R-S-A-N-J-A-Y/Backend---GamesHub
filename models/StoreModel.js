@@ -25,8 +25,13 @@ const Validate = (data) => {
     ),
     coverImageUrl: Joi.string().min(1).max(100).required(),
     shortName: Joi.string().min(1).max(100).required(),
-    gamesID: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)),
-    popularGame: Joi.array().items(Joi.string()),
+    gamesId: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)),
+    popularGame: Joi.array().items(
+      Joi.object({
+        name: Joi.string().required(),
+        likes: Joi.string().required(),
+      })
+    ),
   });
 
   return schema.validate(data);
