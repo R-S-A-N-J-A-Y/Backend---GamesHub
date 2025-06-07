@@ -25,7 +25,7 @@ routes.get("/:id", async (req, res) => {
 });
 
 // POST - Create an New Tag
-routes.post("/", [auth, admin], async (req, res) => {
+routes.post("/", async (req, res) => {
   const result = await Tagcontroller.addTag(req.body);
   if (!result.success) {
     res.status(result.code).send({ data: req.body, message: result.message });

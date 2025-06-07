@@ -60,8 +60,9 @@ routes.get("/:id", async (req, res) => {
 });
 
 //POST - create an New Game
-routes.post("/", [auth, admin], async (req, res) => {
+routes.post("/", async (req, res) => {
   const result = await GameController.createGame(req.body);
+  console.log(result);
   if (!result.success) return res.status(result.code | 500).send(result);
   return res.send(result);
 });

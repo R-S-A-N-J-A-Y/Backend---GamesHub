@@ -8,9 +8,10 @@ const GameSchema = mongoose.Schema(
     description: { type: String, required: true },
 
     coverImageUrl: { type: String, required: true },
+    heroImageUrl: { type: String, required: true },
     screenshots: { type: [String], required: true },
     video: String,
-    youtubeLink: { type: [String], required: true },
+    youtubeLink: { type: String, required: true },
 
     features: {
       type: [{ name: String, imageUrl: String, description: String }],
@@ -65,6 +66,11 @@ const Validate = (data) => {
       "string.empty": `"coverImageUrl" cannot be empty`,
       "any.required": `"coverImageUrl" is required`,
     }),
+
+    heroImageUrl: Joi.string().uri().required().messages({
+      "string.empty": `"coverImageUrl" cannot be empty`,
+      "any.required": `"coverImageUrl" is required`,
+    }),
     screenshots: Joi.array().items(Joi.string().uri()).required().messages({
       "array.base": `"screenshots" must be an array`,
       "any.required": `"screenshots" is required`,
@@ -76,9 +82,19 @@ const Validate = (data) => {
       "any.required": `"youtube Link" is required`,
     }),
 
-    features: Joi.array().items(Joi.string()).required().message({
-      "any.required": `"features" is required`,
-    }),
+    features: Joi.array()
+      .items(
+        Joi.object({
+          name: Joi.string().required(),
+          imageUrl: Joi.string().uri().required(),
+          description: Joi.string().required(),
+        })
+      )
+      .required()
+      .messages({
+        "any.required": `"features" is required`,
+        "array.base": `"features" must be an array`,
+      }),
 
     studios: Joi.array().items(Joi.string()).required().messages({
       "any.required": `"studios" is required`,
