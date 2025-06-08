@@ -51,6 +51,17 @@ exports.getUser = async (email, password) => {
   }
 };
 
+exports.getUserCart = async (_id) => {
+  try {
+    const User = await UserModel.findOne({ _id }).select("cart");
+    if (!User)
+      return { success: false, statusCode: 400, message: "No User is Found" };
+    return { success: true, statusCode: 200, data: User };
+  } catch (err) {
+    return { success: false, statusCode: 500, message: "Backend Dead..." };
+  }
+};
+
 exports.getUserActions = async (_id) => {
   try {
     const User = await UserModel.findById(_id);
