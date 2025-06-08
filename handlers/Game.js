@@ -40,7 +40,7 @@ routes.get("/", async (req, res) => {
 
   // Updating for Log in User
   const watchListGameIds = watchList.map((item) => item.game.toString());
-  // console.log(watchList);
+
   const UpdatedResult = result.data.map((game) => ({
     ...game._doc,
     liked: likedGames.includes(game._id.toString()),
@@ -62,7 +62,7 @@ routes.get("/:id", async (req, res) => {
 });
 
 //POST - create an New Game
-routes.post("/", async (req, res) => {
+routes.post("/", [auth, admin], async (req, res) => {
   const result = await GameController.createGame(req.body);
   console.log(result);
   if (!result.success) return res.status(result.code | 500).send(result);
