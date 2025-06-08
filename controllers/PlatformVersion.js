@@ -10,7 +10,15 @@ const getById = async (id) => {
     let data = await PlatformVersionModel.findOne({ _id: id })
       .select("-__v")
       .populate("parentPlatform", "name")
-      .populate("gamesId", "_id name coverImageUrl ratings");
+      .populate({
+        path: "gamesId",
+        select: "_id name coverImageUrl peopleAdded ratings likes price",
+        populate: {
+          path: "platforms",
+          select: "parentPlatform",
+          populate: { path: "parentPlatform", select: "name" },
+        },
+      });
     return { success: true, data: data };
   } catch (err) {
     return { success: false, message: err };

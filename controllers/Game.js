@@ -15,7 +15,13 @@ exports.getAll = async (page = 0, limit = 0) => {
     const result = await GameModel.find()
       .skip(offset)
       .limit(limit)
-      .select("_id name coverImageUrl peopleAdded ratings likes");
+      .select("_id name coverImageUrl peopleAdded ratings likes price")
+      .populate({
+        path: "platforms",
+        select: "parentPlatform",
+        populate: { path: "parentPlatform", select: "name" },
+      });
+
     return { success: true, data: result };
   } catch (err) {
     return { success: true, message: "Server Error" };
