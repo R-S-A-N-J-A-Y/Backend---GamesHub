@@ -1,3 +1,6 @@
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+
 const { GameModel, Validate } = require("../models/GameModels");
 
 const { getIds: StudioIds, addGameId: StudioAddGameId } = require("./Studio");
@@ -9,7 +12,10 @@ const {
   addGameId: PlatformAddGameId,
 } = require("./PlatformVersion");
 
-exports.getAll = async (page = 0, limit = 0) => {
+const UserController = require("../controllers/User");
+
+// Get All Game
+const getAll = async (page = 0, limit = 0) => {
   const offset = limit * page;
   try {
     const result = await GameModel.find()
@@ -22,13 +28,14 @@ exports.getAll = async (page = 0, limit = 0) => {
         populate: { path: "parentPlatform", select: "name" },
       });
 
-    return { success: true, data: result };
+    return { statusCode: 200, data: result };
   } catch (err) {
-    return { success: true, message: "Server Error" };
+    return { statusCode: 500, message: "Backend is Dead..." };
   }
 };
 
-exports.getById = async (id) => {
+// Get an Game By Id
+const getById = async (id) => {
   try {
     const data = await GameModel.findOne({ _id: id })
       .select(["-createdAt", "-updatedAt", "-__v"])
@@ -53,7 +60,40 @@ exports.getById = async (id) => {
   }
 };
 
-exports.createGame = async (data) => {
+// Get Game for User
+const getAllwithUserMeta = async (token, page, limit) => {
+  let likedGames = [];
+  let watchList = [];
+  try {
+    const decode = jwt.verify(token, process.env.PRIVATE_KEY);
+    const User = await UserController.getUserActions(decode._id);
+    if (User.success) {
+      likedGames = User.data.liked;
+      watchList = User.data.watchList;
+    } else {
+      return { statusCode: 400, message: "No User Found." };
+    }
+  } catch (err) {
+    return { statusCode: 401, message: "Invalid token." };
+  }
+
+  const result = await getAll(page, limit);
+  if (!result.success) return { statusCode: 500, result };
+
+  // Updating for Log in User
+  const watchListGameIds = watchList.map((item) => item.game.toString());
+
+  const UpdatedResult = result.data.map((game) => ({
+    ...game._doc,
+    liked: likedGames.includes(game._id.toString()),
+    watched: watchListGameIds.includes(game._id.toString()),
+  }));
+
+  return { statusCode: 200, result: { ...result, data: UpdatedResult } };
+};
+
+// To create an New Game
+const createGame = async (data) => {
   const { error } = Validate(data);
   if (error) return { success: false, code: 409, message: error };
   try {
@@ -120,4 +160,11 @@ exports.createGame = async (data) => {
   }
 
   // , platforms, collections;
+};
+
+module.exports = {
+  getAll,
+  getById,
+  createGame,
+  getAllwithUserMeta,
 };

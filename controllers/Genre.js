@@ -51,6 +51,7 @@ const getId = async (name) => {
 
 //Get object Ids of Genre - Input : [Name]
 const getIds = async (arr) => {
+  console.log(arr);
   try {
     const results = await Promise.all(arr.map((name) => getId(name)));
     for (let result of results) {
