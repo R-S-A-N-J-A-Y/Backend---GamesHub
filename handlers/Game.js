@@ -28,9 +28,11 @@ routes.get("/", async (req, res) => {
 });
 
 routes.get("/filter", async (req, res) => {
-  const { platforms } = req.query;
+  const { platforms, sortBy, order } = req.query;
   const { statusCode, ...result } = await GameController.getByFilters(
-    platforms
+    platforms,
+    sortBy,
+    order
   );
   res.status(statusCode).send(result);
 });

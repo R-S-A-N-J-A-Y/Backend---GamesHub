@@ -93,14 +93,21 @@ const getAllwithUserMeta = async (token, page, limit) => {
   return { statusCode: 200, result: { ...result, data: UpdatedResult } };
 };
 
-const getByFilters = async (platforms) => {
+const getByFilters = async (platforms, sortBy, order) => {
   try {
     const result = await platformIdsByParentPlatform(platforms);
     if (!result.success) return result;
 
+    const isValidSortField = !!GameModel.schema.path(sortBy);
+    if (!isValidSortField)
+      return { statusCode: 400, message: "Not an Valid Name field in Sort" };
+
+    const sortOrder = order === "asc" ? 1 : -1;
+
     const filterdGames = await GameModel.find({
       platforms: { $in: result.data },
-    });
+    }).sort({ [sortBy]: sortOrder });
+
     return { statusCode: 200, data: filterdGames };
   } catch (err) {
     console.log(err);
