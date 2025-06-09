@@ -27,6 +27,14 @@ routes.get("/", async (req, res) => {
   res.status(statusCode).send(result);
 });
 
+routes.get("/filter", async (req, res) => {
+  const { platforms } = req.query;
+  const { statusCode, ...result } = await GameController.getByFilters(
+    platforms
+  );
+  res.status(statusCode).send(result);
+});
+
 //GET - to get the particular Game with id
 routes.get("/:id", async (req, res) => {
   const gameId = req.params.id;

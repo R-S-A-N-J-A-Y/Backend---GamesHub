@@ -40,6 +40,21 @@ exports.getId = async (platformName) => {
   }
 };
 
+// get the Ids of platform by name
+exports.getIds = async (platformNameArr) => {
+  try {
+    const result = await PlatformModel.find({
+      name: { $in: platformNameArr },
+    }).select("_id");
+    if (!result || result.length === 0)
+      return { success: false, statusCode: 400, message: "No platform found." };
+    const PlatformIds = result.map((obj) => obj._id);
+    return { success: true, statusCode: 200, data: PlatformIds };
+  } catch (err) {
+    return { success: false, statusCode: 500, message: "Backend is Dead..." };
+  }
+};
+
 // WRITE OOPERATION
 
 // Add new Platform details to Db

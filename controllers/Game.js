@@ -10,6 +10,7 @@ const { getIds: StoreIds, addGameId: StoreAddGameId } = require("./Store");
 const {
   getIds: platformIds,
   addGameId: PlatformAddGameId,
+  getIdsByParentPlatform: platformIdsByParentPlatform,
 } = require("./PlatformVersion");
 
 const UserController = require("../controllers/User");
@@ -92,6 +93,21 @@ const getAllwithUserMeta = async (token, page, limit) => {
   return { statusCode: 200, result: { ...result, data: UpdatedResult } };
 };
 
+const getByFilters = async (platforms) => {
+  try {
+    const result = await platformIdsByParentPlatform(platforms);
+    if (!result.success) return result;
+
+    const filterdGames = await GameModel.find({
+      platforms: { $in: result.data },
+    });
+    return { statusCode: 200, data: filterdGames };
+  } catch (err) {
+    console.log(err);
+    return { statusCode: 500, message: "Backend is Dead..." };
+  }
+};
+
 // To create an New Game
 const createGame = async (data) => {
   const { error } = Validate(data);
@@ -165,6 +181,7 @@ const createGame = async (data) => {
 module.exports = {
   getAll,
   getById,
+  getByFilters,
   createGame,
   getAllwithUserMeta,
 };

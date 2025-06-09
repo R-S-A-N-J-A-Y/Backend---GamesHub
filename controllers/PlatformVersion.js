@@ -2,6 +2,7 @@ const {
   PlatformVersionModel,
   Validate,
 } = require("../models/PlatformVersionModel");
+
 const Platform = require("./Platform");
 
 // get platformV by id
@@ -66,6 +67,32 @@ const getIds = async (arr) => {
   }
 };
 
+// Get by name of Parent Platforms
+const getIdsByParentPlatform = async (parentPlatform) => {
+  try {
+    const result = await Platform.getIds(parentPlatform);
+    if (!result.success) return result;
+
+    const parentPlatformIds = result.data;
+    const versions = await PlatformVersionModel.find({
+      parentPlatform: { $in: parentPlatformIds },
+    }).select("_id");
+
+    if (!versions || versions.length === 0)
+      return {
+        success: false,
+        statusCode: 400,
+        message: "No version found...",
+      };
+
+    const VersionArr = versions.map((obj) => obj._id);
+    return { success: true, statusCode: 200, data: VersionArr };
+  } catch (err) {
+    console.log(err);
+    return { success: false, statusCode: 500, data: "Backend Dead..." };
+  }
+};
+
 // Add new Platform details to Db
 const addPlatform = async (data) => {
   // Validating the User data
@@ -107,4 +134,12 @@ const addGameId = async (PlatformVersionIds, GameId) => {
   }
 };
 
-module.exports = { getById, getAll, getId, getIds, addPlatform, addGameId };
+module.exports = {
+  getById,
+  getAll,
+  getId,
+  getIds,
+  addPlatform,
+  addGameId,
+  getIdsByParentPlatform,
+};
