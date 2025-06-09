@@ -16,8 +16,9 @@ const {
 const UserController = require("../controllers/User");
 
 // Get All Game
-const getAll = async (page = 0, limit = 0) => {
+const getAll = async (page = 0, limit = 0, sortBy, order) => {
   const offset = limit * page;
+  const sortOrder = order === "asc" ? 1 : -1;
   try {
     const result = await GameModel.find()
       .skip(offset)
@@ -27,11 +28,12 @@ const getAll = async (page = 0, limit = 0) => {
         path: "platforms",
         select: "parentPlatform",
         populate: { path: "parentPlatform", select: "name" },
-      });
+      })
+      .sort({ [sortBy]: sortOrder });
 
-    return { statusCode: 200, data: result };
+    return { success: true, statusCode: 200, data: result };
   } catch (err) {
-    return { statusCode: 500, message: "Backend is Dead..." };
+    return { success: false, statusCode: 500, message: "Backend is Dead..." };
   }
 };
 
@@ -62,7 +64,7 @@ const getById = async (id) => {
 };
 
 // Get Game for User
-const getAllwithUserMeta = async (token, page, limit) => {
+const getAllwithUserMeta = async (token, page, limit, sortBy, order) => {
   let likedGames = [];
   let watchList = [];
   try {
@@ -78,8 +80,13 @@ const getAllwithUserMeta = async (token, page, limit) => {
     return { statusCode: 401, message: "Invalid token." };
   }
 
-  const result = await getAll(page, limit);
-  if (!result.success) return { statusCode: 500, result };
+  const { success, statusCode, ...result } = await getAll(
+    page,
+    limit,
+    sortBy,
+    order
+  );
+  if (!success) return { statusCode, result };
 
   // Updating for Log in User
   const watchListGameIds = watchList.map((item) => item.game.toString());
@@ -90,9 +97,10 @@ const getAllwithUserMeta = async (token, page, limit) => {
     watched: watchListGameIds.includes(game._id.toString()),
   }));
 
-  return { statusCode: 200, result: { ...result, data: UpdatedResult } };
+  return { statusCode: 200, data: UpdatedResult };
 };
 
+// Filter by platform
 const getByFilters = async (platforms, sortBy, order) => {
   try {
     const result = await platformIdsByParentPlatform(platforms);

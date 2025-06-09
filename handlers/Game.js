@@ -10,20 +10,27 @@ const GameController = require("../controllers/Game");
 //GET - to get all the Games with pagination also It will handle both Guest and Logged User.
 routes.get("/", async (req, res) => {
   const token = req.header("x-auth-token");
-  const { page, limit } = req.query;
+  const { page, limit, sortBy, order } = req.query;
 
   if (token) {
     // Function for Log in User.
     const { statusCode, ...result } = await GameController.getAllwithUserMeta(
       token,
       page,
-      limit
+      limit,
+      sortBy,
+      order
     );
     return res.status(statusCode).send(result);
   }
 
   // Genral Querying the Games - Guest User
-  const { statusCode, ...result } = await GameController.getAll(page, limit);
+  const { statusCode, ...result } = await GameController.getAll(
+    page,
+    limit,
+    sortBy,
+    order
+  );
   res.status(statusCode).send(result);
 });
 
