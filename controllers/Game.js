@@ -16,11 +16,17 @@ const {
 const UserController = require("../controllers/User");
 
 // Get All Game
-const getAll = async (page = 0, limit = 0, sortBy, order) => {
+const getAll = async (page = 0, limit = 0, sortBy, order, platformArray) => {
   const offset = limit * page;
   const sortOrder = order === "asc" ? 1 : -1;
   try {
-    const result = await GameModel.find()
+    let query = GameModel.find(
+      platformArray && platformArray.length > 0
+        ? { platforms: { $in: platformArray } }
+        : {}
+    );
+
+    query = query
       .skip(offset)
       .limit(limit)
       .select("_id name coverImageUrl peopleAdded ratings likes price")
@@ -28,8 +34,14 @@ const getAll = async (page = 0, limit = 0, sortBy, order) => {
         path: "platforms",
         select: "parentPlatform",
         populate: { path: "parentPlatform", select: "name" },
-      })
-      .sort({ [sortBy]: sortOrder });
+      });
+
+    const isValidSortField = sortBy && GameModel.schema.path(sortBy);
+    if (sortBy && isValidSortField) {
+      query = query.sort({ [sortBy]: sortOrder });
+    }
+
+    const result = await query; // Await after sorting
 
     return { success: true, statusCode: 200, data: result };
   } catch (err) {
@@ -103,22 +115,12 @@ const getAllwithUserMeta = async (token, page, limit, sortBy, order) => {
 // Filter by platform
 const getByFilters = async (platforms, sortBy, order) => {
   try {
-    const result = await platformIdsByParentPlatform(platforms);
-    if (!result.success) return result;
+    const platformIdResult = await platformIdsByParentPlatform(platforms);
+    if (!platformIdResult.success) return platformIdResult;
 
-    const isValidSortField = !!GameModel.schema.path(sortBy);
-    if (!isValidSortField)
-      return { statusCode: 400, message: "Not an Valid Name field in Sort" };
-
-    const sortOrder = order === "asc" ? 1 : -1;
-
-    const filterdGames = await GameModel.find({
-      platforms: { $in: result.data },
-    }).sort({ [sortBy]: sortOrder });
-
-    return { statusCode: 200, data: filterdGames };
+    const result = await getAll(0, 0, sortBy, order, platformIdResult.data);
+    return result;
   } catch (err) {
-    console.log(err);
     return { statusCode: 500, message: "Backend is Dead..." };
   }
 };

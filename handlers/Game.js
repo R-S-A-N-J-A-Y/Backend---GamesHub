@@ -1,3 +1,6 @@
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 
@@ -6,6 +9,7 @@ const routes = express.Router();
 const mongoose = require("mongoose");
 
 const GameController = require("../controllers/Game");
+const UserController = require("../controllers/User");
 
 //GET - to get all the Games with pagination also It will handle both Guest and Logged User.
 routes.get("/", async (req, res) => {
