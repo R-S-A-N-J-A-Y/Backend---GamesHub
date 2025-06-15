@@ -56,7 +56,8 @@ const getById = async (id) => {
       .select(["-createdAt", "-updatedAt", "-__v"])
       .populate({
         path: "platforms",
-        select: "name _id",
+        select: "parentPlatform",
+        populate: { path: "parentPlatform", select: "name" },
       })
       .populate({
         path: "tags",
