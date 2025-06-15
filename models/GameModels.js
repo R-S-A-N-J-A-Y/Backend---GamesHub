@@ -62,6 +62,8 @@ const Validate = (data) => {
       "any.required": `"description" is required`,
     }),
 
+    price: Joi.number(),
+
     coverImageUrl: Joi.string().uri().required().messages({
       "string.empty": `"coverImageUrl" cannot be empty`,
       "any.required": `"coverImageUrl" is required`,

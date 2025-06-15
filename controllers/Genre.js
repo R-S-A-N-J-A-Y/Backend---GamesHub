@@ -93,7 +93,7 @@ const addGameId = async (GenreIds, GameId) => {
   try {
     await GenreModel.updateMany(
       { _id: { $in: GenreIds } },
-      { $addToSet: { gamesID: GameId } }
+      { $addToSet: { gamesId: GameId } }
     );
     return { success: true };
   } catch (err) {

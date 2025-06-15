@@ -125,10 +125,31 @@ const getByFilters = async (platforms, sortBy, order) => {
   }
 };
 
+const checkIfGameExists = async (name, shortName) => {
+  try {
+    const game = await GameModel.findOne({ name, shortName });
+    if (game) {
+      return {
+        exists: true,
+        code: 409,
+        game,
+        message: "Game with the same name and short name already exists...",
+      };
+    }
+    return { exists: false };
+  } catch (err) {
+    return { exists: false, error: err.message || err };
+  }
+};
+
 // To create an New Game
 const createGame = async (data) => {
   const { error } = Validate(data);
-  if (error) return { success: false, code: 409, message: error };
+  if (error) return { success: false, code: 400, message: error };
+
+  const IsExist = await checkIfGameExists(data.name, data.shortName);
+  if (IsExist.exists) return IsExist;
+
   try {
     //Get Ids
     let [studios, genres, tags, stores, platforms] = await Promise.all([
@@ -161,8 +182,6 @@ const createGame = async (data) => {
 
     const NewGame = new GameModel(GameData);
     await NewGame.save();
-    console.log("JHI");
-    console.log(NewGame);
     //Update All tables with new Game id
     [studios, genres, tags, stores, platforms] = await Promise.all([
       await StudioAddGameId(studios.data, NewGame._id),
