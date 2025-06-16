@@ -119,8 +119,13 @@ const getGameByIdWithUserMeta = async (token, gameId) => {
   try {
     const decode = jwt.verify(token, process.env.PRIVATE_KEY);
     const UserCart = await UserController.getUserCart(decode._id);
+    const UpdateRecentlyWatched = await UserController.recentlyWatched(
+      decode._id,
+      gameId
+    );
 
     if (!UserCart.success) return UserCart;
+    if (!UpdateRecentlyWatched) return UpdateRecentlyWatched;
 
     isIncart = UserCart.data.cart.find((obj) => obj.game.toString() === gameId);
   } catch (err) {
