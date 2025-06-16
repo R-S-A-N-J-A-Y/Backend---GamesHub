@@ -3,7 +3,7 @@ const express = require("express");
 const routes = express.Router();
 const UserController = require("../controllers/User");
 
-// Get the User Profile
+// Get - the User Profile
 routes.get("/profile", auth, async (req, res) => {
   const id = req.user._id;
   const result = await UserController.getMe(id);
@@ -26,7 +26,14 @@ routes.get("/cart", auth, async (req, res) => {
   return res.status(500).send(result);
 });
 
-// Toggling the Like action
+routes.get("/recentlyWatched", auth, async (req, res) => {
+  const UserId = req.user._id;
+  const { statusCode, success, ...result } =
+    await UserController.getUserRecents(UserId);
+  return res.status(statusCode).send(result);
+});
+
+// Patch - Toggling the Like action
 routes.patch("/toggleLike", auth, async (req, res) => {
   const id = req.user._id;
   const result = await UserController.toggleLike(
@@ -38,7 +45,7 @@ routes.patch("/toggleLike", auth, async (req, res) => {
   res.send(result);
 });
 
-// Toggling the watchList action
+// Patch - Toggling the watchList action
 routes.patch("/toggleWatchList", auth, async (req, res) => {
   const id = req.user._id;
   const result = await UserController.toggleWatchList(
@@ -50,6 +57,7 @@ routes.patch("/toggleWatchList", auth, async (req, res) => {
   res.send(result);
 });
 
+// POST - Create an Cart
 routes.post("/cart", auth, async (req, res) => {
   const id = req.user._id;
   const { statusCode, ...result } = await UserController.CreateCart(
@@ -60,6 +68,7 @@ routes.post("/cart", auth, async (req, res) => {
   return res.status(statusCode).send(result);
 });
 
+// Delete - Delete an Cart
 routes.delete("/cart/:id", auth, async (req, res) => {
   const cartId = req.params.id;
   const userId = req.user._id;

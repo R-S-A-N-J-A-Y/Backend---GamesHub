@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const { UserModel, Validate } = require("../models/UserModel");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
@@ -72,6 +74,50 @@ exports.getUserActions = async (_id) => {
   } catch (err) {
     console.log(err);
     return { success: false, message: "Unexpencted Error Occurred." };
+  }
+};
+
+// User Recent Viewed Games
+exports.getUserRecents = async (_id) => {
+  if (!mongoose.Types.ObjectId.isValid(_id))
+    return {
+      success: false,
+      statusCode: 400,
+      message: "Id is not an Valid Object id",
+    };
+
+  try {
+    const User = await UserModel.findById(_id).populate({
+      path: "recentlyWatched",
+      model: "Game",
+      select: "_id name coverImageUrl price platforms ratings",
+      populate: {
+        path: "platforms",
+        select: "name",
+        populate: { path: "parentPlatform", select: "name" },
+      },
+    });
+
+    if (!User)
+      return { success: false, statusCode: 400, message: "User not found..." };
+
+    const liked = User.likedGames.map((id) => id.toString());
+    const watchList = User.watchList.map((obj) => obj.game.toString());
+
+    const UpdatedData = User.recentlyWatched.map((game) => ({
+      ...game._doc,
+      liked: liked.includes(game._id.toString()),
+      watched: watchList.includes(game._id.toString()),
+    }));
+
+    return { success: true, statusCode: 200, data: UpdatedData };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+      statusCode: 500,
+      message: "Error fetching the User...",
+    };
   }
 };
 
