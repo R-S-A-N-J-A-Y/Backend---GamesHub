@@ -66,7 +66,7 @@ const getById = async (id) => {
     if (!data)
       return {
         success: false,
-        code: 400,
+        statusCode: 400,
         message: "Game with Specified Id is not in database.",
       };
     return { success: true, data: data };
@@ -76,7 +76,7 @@ const getById = async (id) => {
   }
 };
 
-// Get Game for User
+// Get Games for User
 const getAllwithUserMeta = async (token, page, limit, sortBy, order) => {
   let likedGames = [];
   let watchList = [];
@@ -111,6 +111,31 @@ const getAllwithUserMeta = async (token, page, limit, sortBy, order) => {
   }));
 
   return { statusCode: 200, data: UpdatedResult };
+};
+
+//Get Game for User
+const getGameByIdWithUserMeta = async (token, gameId) => {
+  let isIncart = "";
+  try {
+    const decode = jwt.verify(token, process.env.PRIVATE_KEY);
+    const UserCart = await UserController.getUserCart(decode._id);
+
+    if (!UserCart.success) return UserCart;
+
+    isIncart = UserCart.data.cart.find((obj) => obj.game.toString() === gameId);
+  } catch (err) {
+    console.log(err);
+    return { success: false, statusCode: 401, message: "Invalid token." };
+  }
+
+  const { success, statusCode, ...result } = await getById(gameId);
+  if (!success) return { statusCode, result };
+
+  const UpdatedGame = {
+    ...result.data._doc,
+    isInCart: isIncart ? true : false,
+  };
+  return { statusCode: 200, data: UpdatedGame };
 };
 
 // Filter by platform
@@ -221,4 +246,5 @@ module.exports = {
   getByFilters,
   createGame,
   getAllwithUserMeta,
+  getGameByIdWithUserMeta,
 };
