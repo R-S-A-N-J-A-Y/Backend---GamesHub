@@ -174,13 +174,17 @@ exports.toggleWatchList = async (UserId, gameId, watched) => {
   }
 };
 
+const { updateLRUList } = require("../utils/LRU");
+
 exports.recentlyWatched = async (UserId, gameId) => {
   try {
     const User = await UserModel.findById(UserId);
     if (!User)
       return { success: false, statusCode: 400, message: "User not found..." };
-    User.recentlyWatched.push(gameId);
+
+    User.recentlyWatched = updateLRUList(User.recentlyWatched, gameId);
     await User.save();
+
     return {
       success: true,
       statusCode: 200,
