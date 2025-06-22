@@ -63,6 +63,7 @@ const Validate = (data) => {
     }),
 
     price: Joi.number(),
+    ratings: Joi.number(),
 
     coverImageUrl: Joi.string().uri().required().messages({
       "string.empty": `"coverImageUrl" cannot be empty`,
