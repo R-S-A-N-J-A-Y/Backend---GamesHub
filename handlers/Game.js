@@ -38,12 +38,27 @@ routes.get("/", async (req, res) => {
   res.status(statusCode).send(result);
 });
 
+// GET - to filter the game by platforms and sort by
 routes.get("/filter", async (req, res) => {
   const { platforms, sortBy, order } = req.query;
   const { statusCode, ...result } = await GameController.getByFilters(
     platforms,
     sortBy,
     order
+  );
+  res.status(statusCode).send(result);
+});
+
+// GET - get the games by genres
+routes.get("/genres", async (req, res) => {
+  const genresParam = req.query.genres;
+  const genres = Array.isArray(genresParam) ? genresParam : [genresParam];
+  console.log(genres);
+  const genreIds = genres
+    .filter((id) => mongoose.Types.ObjectId.isValid(id))
+    .map((id) => new mongoose.Types.ObjectId(id));
+  const { statusCode, ...result } = await GameController.getGamesByGenre(
+    genreIds
   );
   res.status(statusCode).send(result);
 });

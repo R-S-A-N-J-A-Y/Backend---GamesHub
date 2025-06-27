@@ -156,6 +156,25 @@ const getByFilters = async (platforms, sortBy, order) => {
   }
 };
 
+// Filter by genre
+const getGamesByGenre = async (genres) => {
+  try {
+    const games = await GameModel.find({ genres: { $in: genres } })
+      .select("_id name coverImageUrl peopleAdded ratings likes price")
+      .populate({
+        path: "platforms",
+        select: "parentPlatform",
+        populate: { path: "parentPlatform", select: "name" },
+      });
+    if (!games)
+      return { statusCode: 400, message: "No games found for certain genre." };
+    return { statusCode: 200, data: games };
+  } catch (err) {
+    console.error(err);
+    return { statusCode: 500, message: "Backend is Dead..." };
+  }
+};
+
 const checkIfGameExists = async (name, shortName) => {
   try {
     const game = await GameModel.findOne({ name, shortName });
@@ -252,4 +271,5 @@ module.exports = {
   createGame,
   getAllwithUserMeta,
   getGameByIdWithUserMeta,
+  getGamesByGenre,
 };

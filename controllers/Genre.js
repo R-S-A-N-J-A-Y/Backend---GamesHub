@@ -53,13 +53,10 @@ const getId = async (name) => {
 const getIds = async (arr) => {
   console.log(arr);
   try {
-    const results = await Promise.all(arr.map((name) => getId(name)));
-    for (let result of results) {
-      if (!result.success) return result;
-    }
-    const ids = results.map((result) => result.data[0]._id);
-    return { success: true, data: ids };
+    const results = await GenreModel.find({ name: { $in: arr } }).select("_id");
+    return { success: true, data: results };
   } catch (err) {
+    console.log(err);
     return { success: false, message: err };
   }
 };
