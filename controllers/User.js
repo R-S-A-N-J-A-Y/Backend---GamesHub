@@ -241,6 +241,34 @@ exports.recentlyWatched = async (UserId, gameId) => {
   }
 };
 
+exports.updateCart = async (UserId, cartId, value) => {
+  try {
+    const User = await UserModel.findOne({ _id: UserId });
+    if (!User) return { statusCode: 404, message: "User not found..." };
+
+    const cart = User.cart.find((obj) => obj._id.toString() === cartId);
+    if (!cart) return { statusCode: 404, message: "Cart item not found..." };
+
+    const UpdatedQuantity = cart.quantity + value;
+    if (UpdatedQuantity < 1 || UpdatedQuantity > 5)
+      return {
+        statusCode: 400,
+        message: "Quantity must be between 1 and 5.",
+      };
+
+    User.cart = User.cart.map((obj) =>
+      obj._id.toString() === cartId
+        ? { ...obj, quantity: UpdatedQuantity }
+        : obj
+    );
+    await User.save();
+    return { statusCode: 200, message: "Cart Updated successfully." };
+  } catch (err) {
+    console.log(err);
+    return { statusCode: 500, message: "Server is down..." };
+  }
+};
+
 // Post - Create an New Content
 
 exports.CreateCart = async (UserId, gameId, isInc) => {

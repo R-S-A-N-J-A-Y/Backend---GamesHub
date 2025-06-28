@@ -57,6 +57,18 @@ routes.patch("/toggleWatchList", auth, async (req, res) => {
   res.send(result);
 });
 
+// Patch - Update an quantity in Cart
+routes.patch("/updateCart", auth, async (req, res) => {
+  const id = req.user._id;
+  console.log(id, req.body.cartId, req.body.isInc, req.body.value);
+  const { statusCode, ...result } = await UserController.updateCart(
+    id,
+    req.body.cartId,
+    req.body.value
+  );
+  return res.status(statusCode).send(result);
+});
+
 // POST - Create an Cart
 routes.post("/cart", auth, async (req, res) => {
   const id = req.user._id;
