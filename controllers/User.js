@@ -128,7 +128,7 @@ exports.getTop3WatchlistGames = async (userId) => {
     const User = await UserModel.findOne({ _id: userId });
     if (!User) return { success: false, message: "User not exists." };
 
-    const sliced = User.watchList.slice(0, 3);
+    const sliced = User.watchList.slice(0, 4);
 
     const gameResults = await Promise.all(
       sliced.map((list) => GameController.getById(list.game))
