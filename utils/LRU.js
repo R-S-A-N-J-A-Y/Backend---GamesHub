@@ -1,4 +1,4 @@
-const updateLRUList = (list, gameId, maxSize = 10) => {
+const updateLRUList = (list, gameId, maxSize = 5) => {
   const itemStr = gameId.toString();
   const updatedList = list
     .map((i) => i.toString())
