@@ -143,6 +143,8 @@ exports.getWatchlistGames = async (userId, isTop3) => {
           "shortName",
           "coverImageUrl",
           "platforms",
+          "price",
+          "ratings",
         ]),
         addedAt: sliced[idx].addedAt,
       }));
