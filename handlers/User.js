@@ -13,7 +13,8 @@ routes.get("/profile", auth, async (req, res) => {
 
 routes.get("/watchListPreview", auth, async (req, res) => {
   const UserId = req.user._id;
-  const result = await UserController.getTop3WatchlistGames(UserId);
+  const { isTop3 } = req.query;
+  const result = await UserController.getWatchlistGames(UserId, isTop3);
   // console.log(result);
   if (result.success) return res.send(result);
   return res.status(401).send(result);

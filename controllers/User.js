@@ -123,12 +123,12 @@ exports.getUserRecents = async (_id) => {
 
 const GameController = require("./Game");
 
-exports.getTop3WatchlistGames = async (userId) => {
+exports.getWatchlistGames = async (userId, isTop3) => {
   try {
     const User = await UserModel.findOne({ _id: userId });
     if (!User) return { success: false, message: "User not exists." };
 
-    const sliced = User.watchList.slice(0, 4);
+    const sliced = User.watchList.slice(0, isTop3 ? 4 : User.watchList.length);
 
     const gameResults = await Promise.all(
       sliced.map((list) => GameController.getById(list.game))
