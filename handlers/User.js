@@ -15,7 +15,6 @@ routes.get("/watchListPreview", auth, async (req, res) => {
   const UserId = req.user._id;
   const { isTop3 } = req.query;
   const result = await UserController.getWatchlistGames(UserId, isTop3);
-  // console.log(result);
   if (result.success) return res.send(result);
   return res.status(401).send(result);
 });
@@ -61,7 +60,6 @@ routes.patch("/toggleWatchList", auth, async (req, res) => {
 // Patch - Update an quantity in Cart
 routes.patch("/updateCart", auth, async (req, res) => {
   const id = req.user._id;
-  console.log(id, req.body.cartId, req.body.isInc, req.body.value);
   const { statusCode, ...result } = await UserController.updateCart(
     id,
     req.body.cartId,

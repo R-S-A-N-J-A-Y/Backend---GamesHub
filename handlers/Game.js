@@ -53,7 +53,7 @@ routes.get("/filter", async (req, res) => {
 routes.get("/genres", async (req, res) => {
   const genresParam = req.query.genres;
   const genres = Array.isArray(genresParam) ? genresParam : [genresParam];
-  console.log(genres);
+
   const genreIds = genres
     .filter((id) => mongoose.Types.ObjectId.isValid(id))
     .map((id) => new mongoose.Types.ObjectId(id));
