@@ -128,6 +128,7 @@ exports.getWatchlistGames = async (userId, isTop3) => {
     const User = await UserModel.findOne({ _id: userId });
     if (!User) return { success: false, message: "User not exists." };
 
+    const liked = User.likedGames.map((gameId) => gameId.toString());
     const sliced = User.watchList.slice(0, isTop3 ? 4 : User.watchList.length);
 
     const gameResults = await Promise.all(
@@ -147,6 +148,7 @@ exports.getWatchlistGames = async (userId, isTop3) => {
           "ratings",
         ]),
         addedAt: sliced[idx].addedAt,
+        liked: liked.includes(res.data._id.toString()),
       }));
 
     return { success: true, data: games };
@@ -191,7 +193,7 @@ exports.toggleLike = async (UserId, gameId, liked) => {
       if (!User.likedGames.includes(gameId)) User.likedGames.push(gameId);
     }
 
-    User.save();
+    await User.save();
     return { success: true };
   } catch (err) {
     return { success: false, message: "Invalid User Id" };
