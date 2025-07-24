@@ -1,5 +1,17 @@
 const { Validate, NotficationModel } = require("../models/NotficationModel");
 
+const createNotificationData = (userId, gameId, type, name) => {
+  if (type === "NEW_GAME")
+    return {
+      userId,
+      gamesId: gameId.toString(),
+      type,
+      title: "New Game Released!",
+      message: `Check out the newly launched game: ${name}.`,
+      actionUrl: `/games/${gameId}`,
+    };
+};
+
 const getAllNotification = async () => {
   try {
     const data = await NotficationModel.find().select(
@@ -41,4 +53,8 @@ const createNotification = async (data) => {
   }
 };
 
-module.exports = { createNotification, getAllNotification };
+module.exports = {
+  createNotification,
+  getAllNotification,
+  createNotificationData,
+};

@@ -192,8 +192,10 @@ const checkIfGameExists = async (name, shortName) => {
   }
 };
 
+const NotificationController = require("../controllers/Notifications");
+
 // To create an New Game
-const createGame = async (data) => {
+const createGame = async (userId, data) => {
   const { error } = Validate(data);
   if (error) return { success: false, code: 400, message: error };
 
@@ -251,6 +253,15 @@ const createGame = async (data) => {
         };
       }
     }
+
+
+    const notificationData = NotificationController.createNotificationData(
+      userId,
+      NewGame._id,
+      "NEW_GAME",
+      NewGame.name
+    );
+    NotificationController.createNotification(notificationData);
 
     return {
       success: true,
