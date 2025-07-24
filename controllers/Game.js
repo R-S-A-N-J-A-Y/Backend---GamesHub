@@ -192,6 +192,64 @@ const checkIfGameExists = async (name, shortName) => {
   }
 };
 
+const UpdateGame = async (gameId, data) => {
+  if (data.features?.remove?.length) {
+    await GameModel.updateOne(
+      {
+        _id: gameId,
+      },
+      {
+        $pull: {
+          features: {
+            _id: { $in: data.features.remove },
+          },
+        },
+      }
+    );
+  }
+
+  const updates = {};
+
+  if (data.features?.added?.length) {
+    updates.$addToSet = {
+      features: {
+        $each: data.features.added,
+      },
+    };
+  }
+
+  if (data.screenshots?.length) {
+    updates.$addToSet = {
+      ...updates.$addToSet,
+      screenshots: {
+        $each: data.screenshots,
+      },
+    };
+  }
+
+  const setUpdates = {};
+  if (data.name) setUpdates.name = data.name;
+  if (data.shortName) setUpdates.shortName = data.shortName;
+  if (data.description) setUpdates.description = data.description;
+  if (data.price !== undefined) setUpdates.price = data.price;
+  if (data.ratings !== undefined) setUpdates.ratings = data.ratings;
+  if (data.coverImageUrl) setUpdates.coverImageUrl = data.coverImageUrl;
+  if (data.heroImageUrl) setUpdates.heroImageUrl = data.heroImageUrl;
+  if (data.video) setUpdates.video = data.video;
+  if (data.youtubeLink) setUpdates.youtubeLink = data.youtubeLink;
+
+  if (Object.keys(setUpdates).length) {
+    updates.$set = setUpdates;
+  }
+
+  try {
+    const result = await GameModel.findOneAndUpdate({ _id: gameId }, updates);
+    return { success: true, data: result, code: 200 };
+  } catch (err) {
+    return { success: false, code: 500, message: "Unable to Update" };
+  }
+};
+
 const NotificationController = require("../controllers/Notifications");
 
 // To create an New Game
@@ -254,7 +312,6 @@ const createGame = async (userId, data) => {
       }
     }
 
-
     const notificationData = NotificationController.createNotificationData(
       userId,
       NewGame._id,
@@ -283,4 +340,5 @@ module.exports = {
   getAllwithUserMeta,
   getGameByIdWithUserMeta,
   getGamesByGenre,
+  UpdateGame,
 };

@@ -84,8 +84,18 @@ routes.get("/:id", async (req, res) => {
   return res.send(result);
 });
 
+routes.put("/", auth, async (req, res) => {
+  const { gameId, data } = req.body;
+  if (!data || !gameId)
+    return res
+      .status(400)
+      .json({ success: false, message: "No data to be Applied.." });
+  const { code, ...result } = await GameController.UpdateGame(gameId, data);
+  return res.status(code).json(result);
+});
+
 //POST - create an New Game
-routes.post("/", [auth, admin], async (req, res) => {
+routes.post("/", [auth], async (req, res) => {
   const result = await GameController.createGame(req.user._id, req.body);
   if (!result.success) return res.status(result.code || 500).send(result);
   return res.status(201).send(result);
