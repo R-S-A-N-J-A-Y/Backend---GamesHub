@@ -2,6 +2,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const { GameModel, Validate } = require("../models/GameModels");
+const NotificationController = require("../controllers/Notifications");
 
 const { getIds: StudioIds, addGameId: StudioAddGameId } = require("./Studio");
 const { getIds: GenreIds, addGameId: GenreAddGameId } = require("./Genre");
@@ -192,7 +193,8 @@ const checkIfGameExists = async (name, shortName) => {
   }
 };
 
-const UpdateGame = async (gameId, data) => {
+const UpdateGame = async (gameId, userId, data) => {
+  const game = await GameModel.findById(gameId);
   if (data.features?.remove?.length) {
     await GameModel.updateOne(
       {
@@ -231,12 +233,28 @@ const UpdateGame = async (gameId, data) => {
   if (data.name) setUpdates.name = data.name;
   if (data.shortName) setUpdates.shortName = data.shortName;
   if (data.description) setUpdates.description = data.description;
-  if (data.price !== undefined) setUpdates.price = data.price;
   if (data.ratings !== undefined) setUpdates.ratings = data.ratings;
   if (data.coverImageUrl) setUpdates.coverImageUrl = data.coverImageUrl;
   if (data.heroImageUrl) setUpdates.heroImageUrl = data.heroImageUrl;
   if (data.video) setUpdates.video = data.video;
   if (data.youtubeLink) setUpdates.youtubeLink = data.youtubeLink;
+  if (data.price !== undefined) {
+    // Game Discount Notification
+    if (game.price > 0 && game.price > data.price) {
+      const discount = Math.round(
+        ((game.price - data.price) / game.price) * 100
+      );
+      const notificationData = NotificationController.createNotificationData(
+        userId,
+        gameId,
+        "GAME_DISCOUNT",
+        game.name,
+        discount
+      );
+      NotificationController.createNotification(notificationData);
+      setUpdates.price = data.price;
+    }
+  }
 
   if (Object.keys(setUpdates).length) {
     updates.$set = setUpdates;
@@ -244,13 +262,18 @@ const UpdateGame = async (gameId, data) => {
 
   try {
     const result = await GameModel.findOneAndUpdate({ _id: gameId }, updates);
+    const notificationData = NotificationController.createNotificationData(
+      userId,
+      gameId,
+      "GAME_UPDATE",
+      game.name
+    );
+    NotificationController.createNotification(notificationData);
     return { success: true, data: result, code: 200 };
   } catch (err) {
     return { success: false, code: 500, message: "Unable to Update" };
   }
 };
-
-const NotificationController = require("../controllers/Notifications");
 
 // To create an New Game
 const createGame = async (userId, data) => {
