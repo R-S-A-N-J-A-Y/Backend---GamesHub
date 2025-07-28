@@ -8,6 +8,7 @@ routes.use("/platforms", require("../handlers/Platform"));
 routes.use("/platformsv", require("../handlers/PlatformVersion"));
 routes.use("/studios", require("../handlers/Studio"));
 routes.use("/games", require("../handlers/Game"));
+routes.use("/notifications", require("../handlers/Notification"));
 routes.use("/", require("../handlers/User"));
 
 module.exports = routes;

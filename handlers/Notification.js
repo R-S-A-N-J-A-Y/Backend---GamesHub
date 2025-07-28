@@ -6,9 +6,17 @@ const admin = require("../middleware/admin");
 
 const controller = require("../controllers/Notifications");
 
-routes.get("/", async (req, res) => {
-  const { code, ...result } = await controller.getAllNotification();
-  console.log(code);
+routes.get("/", auth, async (req, res) => {
+  const { code, ...result } = await controller.getAllNotification(req.user._id);
+  return res.status(code).send(result);
+});
+
+routes.get("/:id", auth, async (req, res) => {
+  const { id } = req.params;
+  const { code, ...result } = await controller.getNotification(
+    id,
+    req.user._id
+  );
   return res.status(code).send(result);
 });
 

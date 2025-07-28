@@ -30,18 +30,22 @@ const createNotificationData = (userId, gameId, type, name, discount) => {
     };
 };
 
-const getAllNotification = async () => {
+const getAllNotification = async (userId) => {
   try {
-    const data = await NotficationModel.find().select(
+    const notfications = await NotficationModel.find().select(
       "-userId -__v -createdAt"
     );
+    const data = notfications.map((notify) => ({
+      ...notify._doc,
+      isRead: notify.isRead.includes(userId),
+    }));
+
     return {
       success: true,
       code: 200,
       data: data,
     };
   } catch (err) {
-    console.log(err);
     return {
       success: false,
       code: 500,
@@ -50,9 +54,37 @@ const getAllNotification = async () => {
   }
 };
 
+const getNotification = async (notificationId, userId) => {
+  try {
+    const notification = await NotficationModel.findOne({
+      _id: notificationId,
+    });
+    if (!notification) {
+      return {
+        success: false,
+        code: 404,
+        message: "Notification not found.",
+      };
+    }
+    if (!notification.isRead.includes(userId)) {
+      notification.isRead.push(userId);
+      notification.save().catch((err) => {
+        console.error("Failed to update isRead list:", err);
+      });
+    }
+    return { success: true, code: 200, data: notification.actionUrl };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+      code: 500,
+      message: "Cannot able to find the Notification.",
+    };
+  }
+};
+
 const createNotification = async (data) => {
   const { error } = Validate(data);
-  console.log(error);
   if (error) return { success: false, code: 400, message: error };
 
   try {
@@ -74,5 +106,6 @@ const createNotification = async (data) => {
 module.exports = {
   createNotification,
   getAllNotification,
+  getNotification,
   createNotificationData,
 };

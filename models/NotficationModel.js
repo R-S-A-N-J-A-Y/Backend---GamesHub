@@ -26,7 +26,7 @@ const modelSchema = mongoose.Schema(
     },
     title: { type: String, required: true },
     message: { type: String, required: true },
-    isRead: { type: Boolean, default: false },
+    isRead: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     actionUrl: { type: String },
     meta: { type: mongoose.Schema.Types.Mixed },
   },
