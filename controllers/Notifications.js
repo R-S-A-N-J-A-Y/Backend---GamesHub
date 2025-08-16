@@ -54,6 +54,25 @@ const getAllNotification = async (userId) => {
   }
 };
 
+const getUnReadCnt = async (userId) => {
+  try {
+    const data = await NotficationModel.countDocuments({
+      isRead: { $nin: userId },
+    });
+    return {
+      success: true,
+      code: 200,
+      data: data,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      code: 500,
+      message: "Unable to fetch the Notifications...",
+    };
+  }
+};
+
 const getNotification = async (notificationId, userId) => {
   try {
     const notification = await NotficationModel.findOne({
@@ -105,6 +124,7 @@ const createNotification = async (data) => {
 
 module.exports = {
   createNotification,
+  getUnReadCnt,
   getAllNotification,
   getNotification,
   createNotificationData,

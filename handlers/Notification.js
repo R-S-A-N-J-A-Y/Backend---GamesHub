@@ -20,6 +20,12 @@ routes.get("/:id", auth, async (req, res) => {
   return res.status(code).send(result);
 });
 
+routes.get("/unread/cnt", auth, async (req, res) => {
+  const { _id } = req.user;
+  const { code, ...result } = await controller.getUnReadCnt(_id);
+  return res.status(code).json(result);
+});
+
 routes.post("/create", [auth, admin], async (req, res) => {
   const data = req.body;
   if (!data)
