@@ -7,7 +7,6 @@ const bcrypt = require("bcrypt");
 const saldRounds = 15;
 
 // Get - Normal fetch Controllers
-
 exports.getMe = async (id) => {
   try {
     const user = await UserModel.findOne({ _id: id });
@@ -44,7 +43,7 @@ exports.getUser = async (email, password) => {
     const token = result.generateAuthToken();
     return {
       success: true,
-      data: _.pick(result, ["_id", "name", "email", "watchList"]),
+      data: _.pick(result, ["_id", "name", "email", "watchList", "role"]),
       token: token,
     };
   } catch (err) {
